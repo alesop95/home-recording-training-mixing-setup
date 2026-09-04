@@ -4,7 +4,9 @@ Questo repository è pensato per raccogliere appunti su un setup domestico di re
 
 ## Stato del progetto
 
-L'unico contenuto presente è un file di testo vuoto sotto `_notes/`, il cui nome lascia intuire l'argomento (ragionamenti di elettronica analogica applicata all'audio), ma che non ha ancora testo al suo interno. Tutto il resto dell'albero di lavoro è l'impalcatura standard di progetto: non c'è ancora materiale da leggere o da referenziare.
+Il primo contenuto tecnico reale è la documentazione della macchina di lavoro, sotto [docs/10-ambiente/](docs/10-ambiente/README.md): un desktop riconvertito con Ubuntu Studio a kernel a bassa latenza e una Focusrite Scarlett 2i2 di seconda generazione, con lo schema di partizionamento adottato, la diagnosi del blocco di aggiornamento verso la LTS successiva e lo strato di compatibilità Wine. Quel blocco arriva sincronizzato dal progetto gemello `diy-2way-monitors-home`, che ne è la copia canonica, perché la stessa macchina serve a entrambi; l'indice sta in [docs/README.md](docs/README.md).
+
+Il resto dell'albero di lavoro è ancora l'impalcatura standard di progetto: non c'è una catena del segnale documentata, nessun progetto in una workstation audio digitale, nessuna lista di attrezzatura e nessuna nota di mixing.
 
 ## Cosa ci si può aspettare in futuro
 
