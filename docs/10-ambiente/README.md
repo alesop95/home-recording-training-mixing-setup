@@ -12,13 +12,15 @@ L'hardware è un vecchio desktop riconvertito: processore Intel i7-6700 a 3.40 G
 
 La scheda audio è esterna, una Focusrite Scarlett 2i2 di seconda generazione, con alimentazione phantom a 48 V disponibile. Questa scelta ha una conseguenza diretta sulla catena di misura, discussa nella pagina della fase di misura: rende possibile un microfono XLR da misura, e quindi rende non obbligatorio un microfono USB come l'UMIK-1.
 
-La distribuzione è Ubuntu Studio, non Ubuntu con i pacchetti audio aggiunti a mano. La differenza sta nel kernel a bassa latenza preconfigurato e nella selezione di pacchetti già montata per registrazione, mixing, mastering e live processing. La versione installata è la 25.04, e la pagina sull'aggiornamento spiega perché questa scelta oggi è il problema principale della macchina.
+La distribuzione è Ubuntu Studio, non Ubuntu con i pacchetti audio aggiunti a mano. La differenza sta nel kernel a bassa latenza preconfigurato e nella selezione di pacchetti già montata per registrazione, mixing, mastering e live processing. La versione installata è la 25.04, fuori supporto, e la fotografia del 2026-09-07 mostra che il sistema non è mai stato aggiornato: 134 pacchetti pendenti, ultimo intervento di apt il 13 agosto 2025, e un riavvio richiesto.
 
 ## Indice del blocco
 
 L'installazione del sistema, i requisiti e lo schema di partizionamento adottato stanno in [ubuntu-studio-installazione.md](ubuntu-studio-installazione.md).
 
 La diagnosi del blocco di aggiornamento verso la LTS[^2] successiva, con la procedura di verifica e le due strade possibili, sta in [ubuntu-lts-upgrade.md](ubuntu-lts-upgrade.md).
+
+La fotografia della macchina reale al 2026-09-07, con i dati letti sulla macchina e la diagnosi corretta che smentisce tre delle quattro cause ipotizzate per il blocco di aggiornamento, sta in [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md). È il primo documento del blocco costruito su misure invece che su ricostruzioni, e va letto prima della pagina sulla diagnosi.
 
 La procedura operativa completa di installazione pulita della 26.04 LTS, in undici fasi, con la fotografia dello stato attuale, i controlli di uscita di ogni fase e il piano di rientro, sta in [installazione-pulita-26-04.md](installazione-pulita-26-04.md). Include la configurazione della sospensione automatica e dell'accesso SSH, che sono i due motivi per cui la macchina risultava irraggiungibile.
 

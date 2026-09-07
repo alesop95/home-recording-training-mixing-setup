@@ -6,13 +6,17 @@
 
 > Procedura operativa completa. Ogni passo dichiara che cosa si fa, perché si fa, il comando o l'azione esatta, e come si verifica che sia riuscito. La procedura è divisa in undici fasi e va eseguita nell'ordine: le fasi 0 e 1 raccolgono e mettono in salvo informazioni che dopo la fase 4 non sarebbero più recuperabili, quindi saltarle non è una scorciatoia ma una perdita di dati.
 >
-> Stato: procedura scritta e non ancora eseguita. Le fasi da 0 in avanti verranno spuntate nel registro dei microstep man mano che si compiono, con l'esito reale accanto a quello atteso.
+> Stato al 2026-09-07: la fase 0 è eseguita nella sua parte non privilegiata, e il suo esito ha corretto questa stessa procedura in due punti, cioè la premessa e il controllo del kernel nella fase 6. Le fasi da 1 in avanti non sono ancora state eseguite. Ogni fase viene spuntata nel registro dei microstep man mano che si compie, con l'esito reale accanto a quello atteso.
 
 ## Premessa: perché una installazione e non un aggiornamento
 
-La macchina è su Ubuntu Studio 25.04, una versione intermedia fuori supporto, e la LTS successiva non è raggiungibile con un salto singolo. La ricostruzione della causa sta in `docs/10-ambiente/ubuntu-lts-upgrade.md`, ed è una ipotesi che la fase 0 di questa procedura conferma o smentisce prima di procedere.
+La macchina è su Ubuntu Studio 25.04, una versione intermedia fuori supporto. La premessa originaria di questa procedura diceva anche che la LTS successiva non fosse raggiungibile con un salto singolo, e **quella parte è stata smentita** dalla fase 0: `do-release-upgrade` propone direttamente la 26.04.1 LTS. Il quadro reale è in [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md).
 
-I quattro motivi per cui questa strada è preferibile all'aggiornamento in posto sono argomentati in quel documento e registrati come ADR-006. In sintesi: è una operazione invece di due aggiornamenti in cascata attraverso archivi storici; coincide con l'obiettivo di un ambiente pulito e rimuove la sedimentazione che ha prodotto i guasti su `kernel32.dll`; non mette a rischio la licenza di Akabak, che è legata all'hardware e non all'installazione; e porta su una base supportata per cinque anni.
+Dei quattro motivi per cui questa strada era stata preferita all'aggiornamento in posto, registrati come ADR-006, il primo è caduto con quella smentita: non ci sono due aggiornamenti in cascata attraverso archivi storici da evitare, perché l'alternativa è un solo `do-release-upgrade` dopo aver applicato i 134 pacchetti pendenti. I tre restanti tengono, ed è ADR-011 a registrare la revisione. Il motivo dominante diventa quindi l'ambiente pulito, che la fotografia ha mostrato essere necessario in modo concreto: due repository WineHQ attivi per due rilasci diversi di Ubuntu, `wine-stable 3.0.1` del 2018 accanto a `wine 9.0`, l'architettura `i386` dichiarata, una sorgente `file:/cdrom/` residua e un prefix unico condiviso fra programmi. Restano validi anche il fatto che la licenza di Akabak non sia a rischio e che la 26.04 porti su una base supportata per cinque anni.
+
+Si aggiunge un motivo che prima non c'era, perché richiedeva il dato: `/home` contiene 3,7 GB su 369 disponibili, quindi il costo del salvataggio è trascurabile e il rischio dell'operazione più basso di quanto si potesse stimare.
+
+Poiché una delle quattro gambe è venuta meno, la decisione va riconfermata dall'utente su questa base e non data per acquisita.
 
 Il fatto che rende l'operazione a basso rischio è il partizionamento scelto all'installazione originaria, con `/home` su una partizione separata. È la decisione che oggi paga il dividendo più alto, e va trattata con rispetto: l'unico modo di rovinare questa procedura è formattare `/home` per distrazione nella fase 4.
 
@@ -27,6 +31,8 @@ Non si parte senza aver completato la fase 1. Il trasferimento dei materiali e l
 Non si dà per verificato ciò che non si è letto. Ogni fase ha un controllo di uscita: se il controllo non dà l'esito atteso, si ferma e si capisce, non si prosegue sperando.
 
 ## Fase 0: fotografia completa della macchina attuale
+
+> **Eseguita il 2026-09-07** nella sua parte non privilegiata. L'esito, con i dati reali e le tre ipotesi diagnostiche smentite, è in [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md). Restano da fare le tre voci che richiedono `sudo` o l'interfaccia grafica, elencate in fondo a quel documento.
 
 Obiettivo: registrare lo stato di ciò che esiste, per tre ragioni distinte. Confermare la diagnosi del blocco di aggiornamento. Raccogliere le informazioni che dopo la reinstallazione servono a ricostruire l'ambiente identico. E poter dimostrare, a lavoro finito, che cosa è cambiato e che cosa no.
 
@@ -45,7 +51,9 @@ dpkg --print-foreign-architectures
 do-release-upgrade -c
 ```
 
-Esito atteso se la ricostruzione è corretta: la 25.04 con nome in codice `plucky`, la direttiva `Prompt=lts`, sorgenti che puntano ancora ad `archive.ubuntu.com`, l'architettura `i386` fra quelle straniere, e il messaggio *No new release found* dall'ultimo comando. Se invece l'ultimo comando propone la 25.10, il blocco è altrove e la diagnosi va rifatta sui messaggi reali prima di proseguire.
+Esito reale, misurato il 2026-09-07: la 25.04 con nome in codice `plucky`, confermata; la direttiva `Prompt=normal` e **non** `lts`; sorgenti che puntano a `it.archive.ubuntu.com` sulle suite `plucky` e ancora vive, con risposta HTTP 200; l'architettura `i386` presente, confermata; e l'ultimo comando che risponde *New release '26.04.1 LTS' available*, cioè offre il salto diretto. Il confronto riga per riga fra questo esito e quello che era stato previsto è nella tabella di apertura di [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md).
+
+Su una macchina diversa, o su questa dopo un tempo lungo, l'esito può cambiare: la regola resta leggere i messaggi reali e non assumerli, che è precisamente la lezione di questa fase.
 
 ### 0.2 Disco, partizioni e spazio
 
@@ -327,7 +335,20 @@ systemctl --user status pipewire pipewire-pulse wireplumber
 groups
 ```
 
-Il primo comando deve mostrare un kernel a bassa latenza. Il modo in cui Ubuntu Studio fornisce quel kernel è cambiato fra i rilasci, quindi va verificato dalla documentazione ufficiale della 26.04 e non assunto: è uno dei punti dichiarati come da verificare in `docs/10-ambiente/ubuntu-lts-upgrade.md`. Se il kernel installato è quello generico, si valuta l'installazione del pacchetto a bassa latenza secondo quanto indica la documentazione del rilascio.
+**Attenzione: il controllo sul nome del kernel è sbagliato e darebbe un falso negativo.** Lo diceva una versione precedente di questa fase, e la fotografia del 2026-09-07 lo ha smentito. Su Ubuntu Studio 25.04 non è installato alcun `linux-image-lowlatency`: il kernel è generico, e la configurazione a bassa latenza è ottenuta tramite parametri di avvio. Chi cercasse un kernel chiamato lowlatency concluderebbe che manchi, e installerebbe un pacchetto che non serve.
+
+Il controllo corretto è sulla riga di comando del kernel e sui limiti di priorità in tempo reale.
+
+```bash
+cat /proc/cmdline
+cat /etc/security/limits.d/30-ubuntustudio-audio.conf
+dpkg -l | grep -i lowlatency
+systemctl --user is-active pipewire pipewire-pulse wireplumber
+```
+
+I due parametri che contano in `/proc/cmdline` sono `preempt=full`, che abilita la prelazione completa del kernel, e `threadirqs`, che sposta la gestione degli interrupt in thread schedulabili: sono le proprietà per cui esisteva un kernel separato. I limiti attesi sono `rtprio 95` e `memlock unlimited` per i gruppi `audio` e `pipewire`, e li configura il pacchetto `ubuntustudio-lowlatency-settings`, che è un pacchetto di impostazioni e non un kernel. I tre servizi devono risultare tutti attivi.
+
+Se sulla 26.04 questo schema fosse cambiato, la fonte è la documentazione ufficiale di Ubuntu Studio per quel rilascio, non l'assunzione: il confronto va fatto contro i valori registrati nella fotografia del 2026-09-07, che sono lo stato noto e funzionante di partenza.
 
 Il comando `groups` deve mostrare l'appartenenza al gruppo `audio`, che è ciò che abilita le priorità in tempo reale. Se manca, si aggiunge e si riavvia la sessione.
 
@@ -336,6 +357,8 @@ sudo usermod -aG audio alesop95
 ```
 
 Controllo di uscita: la Scarlett 2i2 compare in ingresso e in uscita, e una riproduzione di prova si sente.
+
+Va notato che al 2026-09-07 la Scarlett **non era collegata**: `lsusb` non riportava alcun dispositivo Focusrite e le sole schede viste erano l'audio integrato `ALC887-VD` con le sue uscite HDMI. Questo controllo di uscita non è quindi eseguibile finché l'interfaccia non viene collegata, e non è un difetto del sistema.
 
 ## Fase 7: ricostruzione dell'ambiente Wine
 

@@ -4,7 +4,11 @@
 
 # Perché la macchina non si aggiorna alla LTS successiva
 
-> Diagnosi del blocco di aggiornamento, con la procedura di verifica da eseguire sulla macchina e le due strade possibili. Attenzione al livello di certezza: la causa qui ricostruita è una ipotesi fondata sul calendario dei rilasci di Ubuntu e sulla versione dichiarata nel documento sorgente, non una osservazione. Nessun comando di questa pagina è stato eseguito sulla macchina, perché al momento della stesura l'accesso non era ancora disponibile: prima la macchina era sospesa e quindi invisibile in rete, poi, una volta sveglia, l'autenticazione SSH è risultata non configurata. Il percorso per aprire quell'accesso è nella fase 10.3 della procedura di installazione pulita. La sezione di verifica di questa pagina esiste proprio per promuovere l'ipotesi a fatto, o per smentirla, e corrisponde alla fase 0.1 di quella procedura.
+> **Questa pagina è in gran parte smentita, e viene conservata di proposito.** Contiene la ricostruzione fatta per ipotesi il 2026-09-04, quando la macchina non era accessibile. La verifica sulla macchina reale, eseguita il 2026-09-07 e documentata in [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md), ha smentito tre delle quattro cause qui sostenute. Chi cerca la diagnosi vera vada a quel documento; chi vuole capire come una ricostruzione plausibile possa essere sbagliata legga questa, che non è stata riscritta per far finta di aver avuto ragione.
+>
+> In sintesi, che cosa è caduto. Il salto diretto alla LTS è offerto, quindi la catena obbligata in due passi non esiste. La direttiva è `Prompt=normal` e non `lts`, e comunque su un rilascio non-LTS `lts` si comporta come `normal`, quindi quella causa non poteva agire nemmeno in principio. Gli archivi della 25.04 sono ancora sull'archivio vivo e rispondono 200, non sono stati spostati su `old-releases`. Ha resistito soltanto la premessa più semplice, cioè che la 25.04 sia fuori supporto, e il quarto punto sui fattori di attrito, che si è rivelato più grave del previsto.
+>
+> E il fatto che riorganizza tutto: `/var/log/dist-upgrade/` è vuota, quindi l'aggiornamento non è mai stato tentato. Non c'era un blocco da diagnosticare.
 
 ## Il calendario dei rilasci, che è la chiave di tutto
 
@@ -21,17 +25,19 @@ Applicando il calendario alla versione installata su questa macchina si ottiene 
 
 La macchina è su 25.04. Alla data di stesura di questa pagina, settembre 2026, quella versione è fuori supporto da circa otto mesi, e anche la versione intermedia immediatamente successiva, la 25.10, è fuori supporto da circa due mesi.
 
-## Le tre cause che si sommano
+## Le tre cause che si sommano, e che non erano quelle
 
-Da questo quadro discendono tre ostacoli distinti, che agiscono insieme. Distinguerli conta, perché ciascuno produce un messaggio di errore diverso e ciascuno si verifica con un comando diverso.
+Da questo quadro discendevano tre ostacoli distinti, che si supponeva agissero insieme. Il ragionamento era coerente e distinguerli era la cosa giusta da fare, perché ciascuno produce un messaggio diverso e ciascuno si verifica con un comando diverso. Il difetto non era nel metodo ma nella conclusione: tutti e tre sono stati smentiti dalla verifica, e ciascuno per una ragione diversa che vale leggere, perché ogni smentita insegna qualcosa sul funzionamento reale dell'aggiornatore di Ubuntu.
 
-Il primo ostacolo è che dalla 25.04 non esiste un salto diretto alla 26.04. Lo strumento `do-release-upgrade` propone soltanto il rilascio immediatamente successivo nella catena, quindi da 25.04 propone la 25.10, e da 25.10 propone la 26.04. Il percorso è obbligatoriamente in due passi. Chi si aspetta di passare da una intermedia alla LTS successiva in un colpo trova uno strumento che sembra non funzionare, mentre sta funzionando come progettato.
+Il primo ostacolo, **poi smentito**, sarebbe che dalla 25.04 non esiste un salto diretto alla 26.04. Lo strumento `do-release-upgrade` propone soltanto il rilascio immediatamente successivo nella catena, quindi da 25.04 propone la 25.10, e da 25.10 propone la 26.04. Il percorso è obbligatoriamente in due passi. Chi si aspetta di passare da una intermedia alla LTS successiva in un colpo trova uno strumento che sembra non funzionare, mentre sta funzionando come progettato.
 
-Il secondo ostacolo è la configurazione del prompt di aggiornamento. Il file `/etc/apt/../update-manager/release-upgrades`, cioè `/etc/update-manager/release-upgrades`, contiene una direttiva `Prompt` che vale `lts`, `normal` oppure `never`. Con `Prompt=lts` lo strumento consulta l'elenco delle sole versioni LTS, e da una versione intermedia quell'elenco non contiene alcun successore: il risultato è il messaggio *No new release found*, che sembra dire che non ci sono aggiornamenti mentre sta dicendo che non ce ne sono di quel tipo. Su una versione intermedia la direttiva corretta per procedere è `normal`.
+Il secondo ostacolo, **poi smentito due volte**, sarebbe la configurazione del prompt di aggiornamento. Il file `/etc/apt/../update-manager/release-upgrades`, cioè `/etc/update-manager/release-upgrades`, contiene una direttiva `Prompt` che vale `lts`, `normal` oppure `never`. Con `Prompt=lts` lo strumento consulta l'elenco delle sole versioni LTS, e da una versione intermedia quell'elenco non contiene alcun successore: il risultato è il messaggio *No new release found*, che sembra dire che non ci sono aggiornamenti mentre sta dicendo che non ce ne sono di quel tipo. Su una versione intermedia la direttiva corretta per procedere è `normal`.
 
-Il terzo ostacolo, e probabilmente il più visibile in pratica, è che gli archivi dei rilasci fuori supporto vengono spostati. Quando una versione raggiunge la fine del supporto i suoi pacchetti lasciano `archive.ubuntu.com` e finiscono su `old-releases.ubuntu.com`. Finché le sorgenti puntano al vecchio indirizzo, `apt update` restituisce errori 404 su tutti i componenti, e senza un `apt update` che vada a buon fine `do-release-upgrade` non può nemmeno scaricare il proprio strumento di aggiornamento. Questo vale sia per la 25.04 su cui la macchina si trova, sia per la 25.10 attraverso cui dovrebbe transitare: entrambe le tappe sono su archivio storico.
+Il terzo ostacolo, che era stato dato per il più visibile in pratica e che è **smentito**, sarebbe che gli archivi dei rilasci fuori supporto vengono spostati. Quando una versione raggiunge la fine del supporto i suoi pacchetti lasciano `archive.ubuntu.com` e finiscono su `old-releases.ubuntu.com`. Finché le sorgenti puntano al vecchio indirizzo, `apt update` restituisce errori 404 su tutti i componenti, e senza un `apt update` che vada a buon fine `do-release-upgrade` non può nemmeno scaricare il proprio strumento di aggiornamento. Questo vale sia per la 25.04 su cui la macchina si trova, sia per la 25.10 attraverso cui dovrebbe transitare: entrambe le tappe sono su archivio storico.
 
-A questi tre si aggiungono due fattori di attrito propri di questa macchina, che non bloccano ma complicano. Uno è l'architettura `i386` aggiunta a mano con `dpkg --add-architecture i386` per far funzionare Wine a 32 bit: raddoppia l'insieme dei pacchetti per molte librerie e, durante un aggiornamento di rilascio, è una fonte classica di dipendenze insoddisfacibili. L'altro sono i repository di terze parti, tipicamente quello di WineHQ, che l'aggiornamento disabilita automaticamente e che poi vanno riabilitati a mano con il nome del nuovo rilascio.
+A questi tre si aggiungono due fattori di attrito propri di questa macchina, che non bloccano ma complicano, e che sono l'unica parte **confermata** di questa analisi. Uno è l'architettura `i386` aggiunta a mano con `dpkg --add-architecture i386` per far funzionare Wine a 32 bit: raddoppia l'insieme dei pacchetti per molte librerie e, durante un aggiornamento di rilascio, è una fonte classica di dipendenze insoddisfacibili. L'altro sono i repository di terze parti, tipicamente quello di WineHQ, che l'aggiornamento disabilita automaticamente e che poi vanno riabilitati a mano con il nome del nuovo rilascio.
+
+La verifica ha trovato questo secondo fattore in forma più grave di quanto qui previsto: sulla macchina i repository WineHQ attivi sono **due contemporaneamente**, `winehq-noble.sources` e `winehq-plucky.sources`, cioè per due rilasci diversi di Ubuntu, e forniscono entrambi pacchetti con gli stessi nomi in versioni diverse.
 
 ## Come verificarlo sulla macchina
 
@@ -51,7 +57,7 @@ uname -r
 dpkg -l | grep -c "^ii"
 ```
 
-L'esito atteso, se la ricostruzione è corretta, è il seguente. Il primo blocco conferma la 25.04. Il terzo mostra `Prompt=lts`. Il quarto mostra sorgenti che puntano ancora ad `archive.ubuntu.com` con il nome in codice `plucky`. Il sesto elenca `i386`. Il settimo restituisce errori 404. L'ottavo dice *No new release found*. Se invece l'ottavo comando propone la 25.10, allora il blocco è altrove e la diagnosi va rifatta sui messaggi reali.
+L'esito atteso, se la ricostruzione fosse stata corretta, sarebbe stato il seguente. Il confronto con l'esito reale, riga per riga, è nella tabella di apertura di `fotografia-macchina-2026-09-07.md`. Il primo blocco conferma la 25.04. Il terzo mostra `Prompt=lts`. Il quarto mostra sorgenti che puntano ancora ad `archive.ubuntu.com` con il nome in codice `plucky`. Il sesto elenca `i386`. Il settimo restituisce errori 404. L'ottavo dice *No new release found*. Se invece l'ottavo comando propone la 25.10, allora il blocco è altrove e la diagnosi va rifatta sui messaggi reali.
 
 Da notare, sulla forma dei file di configurazione: dalla 24.04 Ubuntu usa il formato deb822, quindi le sorgenti stanno in `/etc/apt/sources.list.d/ubuntu.sources` e non più nel vecchio `/etc/apt/sources.list`. Su una 25.04 il file da guardare è quello, e un appunto che citasse solo il vecchio percorso sarebbe fuorviante.
 
@@ -61,9 +67,11 @@ Chiarita la causa, restano due modi di uscirne, e non sono equivalenti.
 
 ### Strada A: aggiornamento in posto, in due salti
 
-Si ripuntano le sorgenti su `old-releases.ubuntu.com`, si porta la 25.04 a un aggiornamento completo, si imposta `Prompt=normal`, si esegue il salto alla 25.10, e da lì si ripete l'operazione per arrivare alla 26.04 LTS. Ad ogni tappa i repository di terze parti vanno disattivati prima e riallineati dopo, e l'architettura `i386` va tenuta d'occhio.
+**Descrizione superata dalla verifica.** Come era stata scritta, questa strada richiedeva di ripuntare le sorgenti su `old-releases.ubuntu.com`, portare la 25.04 a un aggiornamento completo, impostare `Prompt=normal`, saltare alla 25.10 e ripetere per la 26.04 LTS.
 
-Il vantaggio è che il sistema installato, con i suoi programmi e le sue configurazioni, sopravvive. Gli svantaggi sono tre e vanno pesati insieme: due aggiornamenti di rilascio consecutivi attraverso versioni fuori supporto sono la configurazione più fragile in cui si possa fare questa operazione, l'archivio storico non riceve più correzioni quindi si transita per pacchetti già superati, e il risultato finale è un sistema che porta la sedimentazione di tre rilasci più le manipolazioni fatte a mano su Wine.
+La realtà è molto più semplice: le sorgenti sono già valide, la direttiva è già `normal`, e `do-release-upgrade` propone direttamente la 26.04.1 LTS. La strada A è quindi un aggiornamento completo dei 134 pacchetti pendenti, un riavvio che è già richiesto, e un solo `do-release-upgrade`. Resta necessario disattivare prima i repository di terze parti, e qui il lavoro è reale perché i WineHQ attivi sono due per due rilasci diversi.
+
+Il vantaggio è che il sistema installato, con i suoi programmi e le sue configurazioni, sopravvive. Degli svantaggi originariamente elencati ne resta uno solo, perché i primi due riguardavano la cascata attraverso archivi storici che non c'è: il risultato finale è un sistema che porta la sedimentazione documentata nella fotografia, cioè due repository WineHQ, una versione di `wine-stable` del 2018 accanto a una del 2024, l'architettura `i386` e un prefix unico condiviso.
 
 ### Strada B: installazione pulita di Ubuntu Studio 26.04 LTS, conservando la home
 
