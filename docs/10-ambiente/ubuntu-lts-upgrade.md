@@ -4,7 +4,7 @@
 
 # Perché la macchina non si aggiorna alla LTS successiva
 
-> Diagnosi del blocco di aggiornamento, con la procedura di verifica da eseguire sulla macchina e le due strade possibili. Attenzione al livello di certezza: la causa qui ricostruita è una ipotesi fondata sul calendario dei rilasci di Ubuntu e sulla versione dichiarata nel documento sorgente, non una osservazione. La macchina non era raggiungibile in rete al momento della stesura, quindi nessun comando di questa pagina è stato eseguito su di essa. La sezione di verifica esiste proprio per promuovere l'ipotesi a fatto, o per smentirla.
+> Diagnosi del blocco di aggiornamento, con la procedura di verifica da eseguire sulla macchina e le due strade possibili. Attenzione al livello di certezza: la causa qui ricostruita è una ipotesi fondata sul calendario dei rilasci di Ubuntu e sulla versione dichiarata nel documento sorgente, non una osservazione. Nessun comando di questa pagina è stato eseguito sulla macchina, perché al momento della stesura l'accesso non era ancora disponibile: prima la macchina era sospesa e quindi invisibile in rete, poi, una volta sveglia, l'autenticazione SSH è risultata non configurata. Il percorso per aprire quell'accesso è nella fase 10.3 della procedura di installazione pulita. La sezione di verifica di questa pagina esiste proprio per promuovere l'ipotesi a fatto, o per smentirla, e corrisponde alla fase 0.1 di quella procedura.
 
 ## Il calendario dei rilasci, che è la chiave di tutto
 
@@ -69,7 +69,7 @@ Il vantaggio è che il sistema installato, con i suoi programmi e le sue configu
 
 Si scarica l'immagine di Ubuntu Studio 26.04 LTS, si riformatta la sola partizione root e si rimonta `/home` esistente senza formattarla. Il partizionamento adottato all'installazione originaria, con `/home` su una partizione separata, è esattamente ciò che rende questa operazione a basso rischio: i dati personali, i progetti e i prefix di Wine restano dove sono.
 
-È la strada che questa documentazione raccomanda, per quattro motivi.
+È la strada scelta, confermata dall'utente, e la procedura operativa completa in undici fasi sta in [installazione-pulita-26-04.md](installazione-pulita-26-04.md). I motivi sono quattro.
 
 Il primo è che è più corta e più prevedibile: una installazione contro due aggiornamenti di rilascio in cascata su archivi storici.
 

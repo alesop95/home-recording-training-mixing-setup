@@ -31,9 +31,21 @@ Non serve installare anche Wine a 32 bit per Akabak. Con il solo Wine a 64 bit e
 
 ## VACS
 
-VACS è lo strumento di visualizzazione e analisi dei dati che l'autore di Akabak distribuisce insieme al simulatore, e la student license concessa copre entrambi. È distribuito in due varianti, a 32 e a 64 bit, e sulla macchina è disponibile in entrambe.
+VACS è lo strumento di visualizzazione e analisi dei dati che l'autore di Akabak distribuisce insieme al simulatore, e la student license concessa copre entrambi con un solo Release Code. La versione dichiarata dall'autore è la 2.1.3 build 33, coerente con i nomi degli installer conservati. È distribuito in due varianti, a 32 e a 64 bit, e sulla macchina è disponibile in entrambe.
 
 La variante da installare è quella a 64 bit, nello stesso prefix di Akabak, perché i due programmi si usano in sequenza e condividono le dipendenze. La variante a 32 bit resta come riserva per il caso in cui la prima dia problemi, e in quel caso va in un prefix a 32 bit separato, non nello stesso.
+
+Va registrato un precedente utile, perché è il tipo di guasto che si ripresenta. Al primo impianto, nell'agosto 2025, Akabak partì e VACS no, e l'ipotesi formulata sul momento fu che dipendesse dall'aver usato la variante a 64 bit invece di quella a 32. Il problema fu risolto entro il giorno successivo, ma la corrispondenza non registra quale intervento lo abbia risolto, quindi non lo si sa: potrebbe essere stata l'installazione della variante a 32 bit, una dipendenza aggiunta con winetricks, o la ricreazione del prefix. È una lacuna dichiarata e non riempita per ipotesi, e si chiude soltanto ispezionando la macchina attuale, come previsto dalla fase 0.5 di `installazione-pulita-26-04.md`.
+
+## Il limite delle pipeline COM fra Akabak e VACS
+
+Questo non è un guasto da risolvere ma una proprietà dell'ambiente, dichiarata dall'autore del software, e va conosciuta prima di iniziare a lavorare invece di scoprirla alla prima iterazione.
+
+Su Windows i due programmi si scambiano i dati attraverso COM, l'infrastruttura con cui due processi distinti espongono e invocano oggetti fra loro: Akabak consegna i risultati e VACS li riceve senza che l'utente faccia nulla. Wine implementa COM soltanto in parte, e l'autore ha constatato che su Linux quel canale non funziona per i suoi programmi. La via che indica è quella degli appunti di sistema: si copia da Akabak e si incolla in VACS, con l'impostazione relativa nelle preferenze di Akabak.
+
+La conseguenza pratica è un passo manuale a ogni passaggio di dati, e le iterazioni della fase 5 del progetto sono molte, perché il ciclo consiste nel modificare parametri e materiali finché la risposta non rientra nella tolleranza dichiarata. Conviene quindi adottare una disciplina di denominazione dei risultati e verificare a ogni incollaggio che il dato sia quello atteso, perché un passo manuale ripetuto è il punto in cui si incolla per errore il risultato della simulazione precedente.
+
+Lo storico completo di questa constatazione, con la cronologia della corrispondenza, sta in `docs/90-riferimenti/timeline-akabak-vacs.md`.
 
 ## VituixCAD 2
 

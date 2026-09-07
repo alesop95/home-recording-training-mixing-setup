@@ -20,6 +20,8 @@ L'installazione del sistema, i requisiti e lo schema di partizionamento adottato
 
 La diagnosi del blocco di aggiornamento verso la LTS[^2] successiva, con la procedura di verifica e le due strade possibili, sta in [ubuntu-lts-upgrade.md](ubuntu-lts-upgrade.md).
 
+La procedura operativa completa di installazione pulita della 26.04 LTS, in undici fasi, con la fotografia dello stato attuale, i controlli di uscita di ogni fase e il piano di rientro, sta in [installazione-pulita-26-04.md](installazione-pulita-26-04.md). Include la configurazione della sospensione automatica e dell'accesso SSH, che sono i due motivi per cui la macchina risultava irraggiungibile.
+
 La differenza concettuale fra Wine, un emulatore e una macchina virtuale, che è il punto da cui dipende tutto il resto della configurazione, sta in [wine-vs-emulatore.md](wine-vs-emulatore.md).
 
 Il modello dei prefix, la scelta fra 32 e 64 bit e il comportamento delle licenze legate alla macchina stanno in [wine-prefix-e-dipendenze.md](wine-prefix-e-dipendenze.md).
@@ -27,6 +29,8 @@ Il modello dei prefix, la scelta fra 32 e 64 bit e il comportamento delle licenz
 La procedura di pulizia, installazione e configurazione di Wine sta in [wine-configurazione.md](wine-configurazione.md).
 
 L'installazione dei singoli programmi Windows, cioè Akabak, VituixCAD, WinISD ed EASE Focus, sta in [wine-programmi-windows.md](wine-programmi-windows.md).
+
+L'inventario verificato del corredo software `Progetto stanza`, con il formato reale di ogni installer, il prefix di destinazione, le dipendenze e lo stato di licenza accertato di ciascuna voce, sta in [wine-corredo-progetto-stanza.md](wine-corredo-progetto-stanza.md). È anche la pagina che spiega perché l'architettura di un installer non è quella dell'applicazione che installa.
 
 I guasti già incontrati e la loro risoluzione stanno in [wine-troubleshooting.md](wine-troubleshooting.md).
 
