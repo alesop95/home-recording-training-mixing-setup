@@ -564,16 +564,38 @@ Durante questa sessione la macchina, una volta sveglia, ha risposto sulla porta 
 
 La soluzione pulita è una chiave dedicata a questo host, separata da quelle usate per GitHub, con una voce di configurazione che le dia un alias. La separazione non è pedanteria: una chiave per host limita il danno di una chiave compromessa, e l'alias rende il comando corto e ripetibile.
 
-I comandi vanno eseguiti dalla postazione Windows, e il secondo chiede una volta la password dell'utente sulla macchina.
+I comandi vanno eseguiti dalla postazione Windows, e quello che installa la chiave chiede una volta la password dell'utente sulla macchina.
+
+Va premesso un avvertimento che nasce da un errore realmente commesso in questa documentazione, registrato come MS-027. Il comando `ssh-copy-id` non è un eseguibile: è uno script di shell POSIX, distribuito con OpenSSH sui sistemi Unix e presente su Windows dentro Git Bash, ma non fra i comandi che il client OpenSSH di Windows installa. In PowerShell non esiste, e una prima versione di questa pagina lo proponeva lì dentro, producendo `Termine 'ssh-copy-id' non riconosciuto come nome di cmdlet`. La regola generale che ne discende: quando si forniscono due blocchi equivalenti per due shell, l'equivalenza va verificata sulla disponibilità dei comandi e non solo sulla loro sintassi, perché il linter dei comandi del progetto controlla la forma delle righe e non l'esistenza dei binari.
+
+La generazione della chiave, che è identica nelle due shell a meno della forma del percorso e dell'escaping della passphrase vuota.
 
 ```powershell
 ssh-keygen -t ed25519 -f "$env:USERPROFILE\.ssh\id_ed25519_studio" -C "postazione-windows -> ubuntu-studio" -N '""'
-ssh-copy-id -i "$env:USERPROFILE\.ssh\id_ed25519_studio.pub" alesop95@192.168.10.204
 ```
 
 ```bash
 ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_studio -C "postazione-windows -> ubuntu-studio" -N ""
+```
+
+Se la chiave esiste già il comando chiede di sovrascriverla, e la risposta è no: si passa direttamente al passo successivo, perché una chiave rigenerata invaliderebbe quella eventualmente già installata sulla macchina.
+
+L'installazione della chiave sulla macchina. In PowerShell si fa a mano ciò che `ssh-copy-id` automatizza, cioè si legge la chiave pubblica e la si accoda al file delle chiavi autorizzate, creando la cartella con i permessi che il servizio SSH pretende. In Git Bash si usa `ssh-copy-id`, che esiste.
+
+```powershell
+type "$env:USERPROFILE\.ssh\id_ed25519_studio.pub" | ssh alesop95@192.168.10.204 "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+```
+
+```bash
 ssh-copy-id -i ~/.ssh/id_ed25519_studio.pub alesop95@192.168.10.204
+```
+
+I permessi non sono un dettaglio estetico: il servizio SSH rifiuta di usare un file di chiavi autorizzate accessibile ad altri utenti, e senza `chmod` l'autenticazione continuerebbe a fallire senza spiegare perché. È il motivo per cui il comando in una riga li imposta esplicitamente.
+
+La verifica che l'installazione sia riuscita, da eseguire subito e prima di modificare la configurazione del servizio.
+
+```bash
+ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519_studio alesop95@192.168.10.204 "echo CONNESSO; hostname"
 ```
 
 Poi si aggiunge a `~/.ssh/config` della postazione una voce come la seguente, che dà l'alias `studio` e fissa quale chiave usare.

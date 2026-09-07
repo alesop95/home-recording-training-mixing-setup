@@ -4,19 +4,23 @@
 
 # Il corredo "Progetto stanza": inventario verificato e piano Wine
 
-> Piano di messa in opera sotto Wine del corredo software raccolto nella cartella `Progetto stanza (software)`. A differenza dell'inventario derivato dal file di testo, questa pagina nasce dall'ispezione diretta dei file: per ogni programma dichiara il formato reale dell'eseguibile, l'architettura, il prefix di destinazione, le dipendenze e lo stato di licenza accertato. Due delle informazioni qui raccolte modificano decisioni già prese altrove, e sono segnalate come tali.
+> Piano di messa in opera sotto Wine del corredo software raccolto nella cartella `Progetto stanza (software)`. A differenza dell'inventario derivato dal file di testo, questa pagina nasce dall'ispezione diretta dei file: per ogni programma dichiara il formato reale dell'eseguibile, l'architettura, il prefix di destinazione, le dipendenze e lo stato di licenza accertato. Due delle informazioni qui raccolte modificano decisioni già prese altrove, e sono segnalate come tali. Una inferenza di una versione precedente di questa pagina è stata smentita da una verifica successiva ed è ritirata esplicitamente invece di essere cancellata in silenzio.
 
-## Da dove viene questo corredo, e le tre copie
+## Da dove viene questo corredo, e le quattro posizioni
 
-Il materiale esiste in tre luoghi, e distinguerli evita di cancellare la copia sbagliata.
+Il materiale esiste in quattro luoghi, e distinguerli evita di cancellare la copia sbagliata.
 
 La copia di lavoro, che è quella ispezionata per scrivere questa pagina, sta sul Desktop della postazione Windows, sotto `C:\Users\Utente\Desktop\Progetto stanza (software)`, e pesa 2,3 GB.
 
-La copia ridondante sta su un SSD esterno, sotto `J:\Progetto stanza (software)`, ed è dichiarata dall'utente una copia uno a uno della precedente. Quel disco non era collegato durante questa sessione, quindi la corrispondenza non è stata verificata e resta una affermazione dell'utente, non un fatto accertato.
+La copia ridondante sta su un SSD esterno, sotto `J:\Progetto stanza (software)`. La corrispondenza uno a uno con la copia sul Desktop, dichiarata dall'utente, è stata verificata il 2026-09-07 quando il disco è stato collegato, e risulta **confermata**: 650 file su entrambe le copie, gli stessi nomi, le stesse dimensioni, 2.380.021.546 byte in totale su ciascuna, e le impronte SHA-256 di tutti e 650 i file coincidenti, senza alcun file presente su una sola delle due. Va segnalato un tranello nel metodo: `du -sh` riportava dimensioni sensibilmente diverse fra le due copie, per esempio 14 MB contro 5,9 MB su LSPCad 5.25, e quella differenza non era reale ma dovuta alla dimensione dei cluster dei due filesystem, che arrotonda lo spazio occupato da ogni file. È la dimostrazione pratica del perché il criterio di confronto deve essere l'impronta del contenuto e non lo spazio occupato.
 
-L'inventario testuale, il file `(SSD S7) DIY Loudspeaker Pack Softwares.txt` nella radice di questo progetto, descrive l'albero della copia su SSD. È il documento da cui era stato ricavato il primo inventario, e il confronto con l'ispezione diretta ha rivelato una differenza: nella copia sul Desktop la versione 3.1.10 di EASE Focus non è una cartella ma un collegamento, quindi il suo contenuto vive altrove, presumibilmente solo sull'SSD.
+L'inventario testuale, il file `(SSD S7) DIY Loudspeaker Pack Softwares.txt` nella radice di questo progetto, descrive l'albero della copia su SSD. È il documento da cui era stato ricavato il primo inventario.
 
-La destinazione finale è la macchina Ubuntu Studio, dove il sottoinsieme utile va installato sotto Wine. La cancellazione della copia su SSD è una azione differita e tracciata in `docs/PENDING-ACTIONS.md`, e la sua condizione di sblocco è che il trasferimento verso la macchina sia stato completato e verificato.
+Va corretta qui una inferenza sbagliata di una versione precedente di questa pagina. Osservando che nella copia sul Desktop la versione 3.1.10 di EASE Focus era un collegamento e non una cartella, si era concluso che il suo contenuto vivesse presumibilmente sul solo SSD. È falso: il collegamento c'è su entrambe le copie, identico, e non è una divergenza fra loro. La lettura del collegamento ha rivelato dove punta davvero, ed è la scoperta della sezione seguente.
+
+Esiste poi una quarta posizione, che nessuna delle tre precedenti dichiarava e che è emersa leggendo il contenuto del collegamento. Il materiale di EASE Focus 3.1.10 del workshop K-array risiede su un disco `G:`, al percorso `G:\LIBRARY\LOUDSPEAKERS & ELECTROACOUSTIC\K-ARRAY WORKSHOP\EASE Focus (k-array)`. Quel disco non era collegato al momento della verifica, quindi il contenuto non è stato ispezionato e non si sa che cosa contenga oltre a quanto il documento sorgente descriveva, cioè installer, alcuni GLL e i progetti di esempio del workshop. È tracciato come PA-004, e la priorità è bassa perché la 3.1.10 non è la versione da installare.
+
+La destinazione finale è la macchina Ubuntu Studio, dove il sottoinsieme utile va installato sotto Wine. La cancellazione della copia su SSD è una azione differita e tracciata come PA-001 in `docs/PENDING-ACTIONS.md`: delle sue tre condizioni di sblocco, quella sulla corrispondenza fra le copie è ora soddisfatta, e resta il completamento verificato del trasferimento verso la macchina.
 
 ## L'inventario verificato
 
@@ -191,4 +195,4 @@ Il comportamento del servizio di database AFMG sotto Wine, che è un servizio Wi
 
 L'accesso alla scheda audio da parte di ARTA sotto Wine, con la sua latenza e la sua stabilità. Per il progetto è secondario, perché la misura dal vivo la fa REW nativo.
 
-La corrispondenza uno a uno fra la copia sul Desktop e quella su SSD, dichiarata dall'utente e non verificata perché il disco non era collegato. La verifica è la condizione di sblocco della cancellazione tracciata in `docs/PENDING-ACTIONS.md`, e il modo di farla è il confronto delle impronte, non un confronto a occhio dei nomi.
+Il contenuto del disco `G:`, dove risiede il materiale di EASE Focus 3.1.10 del workshop K-array a cui punta il collegamento presente in entrambe le copie. Il disco non era collegato, quindi non è stato ispezionato. Tracciato come PA-004, priorità bassa perché la versione da installare è la 3.1.260.
