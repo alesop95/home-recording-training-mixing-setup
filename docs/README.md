@@ -24,6 +24,10 @@ La diagnosi del blocco di aggiornamento e la raccomandazione di una installazion
 
 La parte su Wine è meno pertinente qui, perché i programmi Windows che richiede sono simulatori acustici e non strumenti di registrazione. Resta comunque parte del blocco, sia perché descrive lo stato reale della macchina, sia perché la pagina sulla differenza fra Wine, un emulatore e una macchina virtuale è la spiegazione da leggere se un domani servisse far girare qui un plugin o uno strumento solo-Windows.
 
+## Azioni differite
+
+Le decisioni e gli impegni di questo progetto che dipendono da una condizione esterna stanno in [PENDING-ACTIONS.md](PENDING-ACTIONS.md). La prima voce, e al momento l'unica, è la valutazione dell'acquisto di una interfaccia audio: la Focusrite Scarlett 2i2 attualmente disponibile ha due ingressi, che bastano al progetto dei monitor ma sono il vincolo principale per la registrazione multitraccia, che è lo scopo di questo progetto. La voce fissa i criteri da stabilire prima di guardare i modelli, fra cui il supporto su Linux, che a questo scopo non è un dettaglio.
+
 ## Che cosa manca a questo progetto
 
 Tutto il resto. Non c'è ancora una catena del segnale documentata, nessun progetto in una workstation audio digitale, nessuna lista di attrezzatura, nessuna nota di mixing. Il repository resta un contenitore intenzionalmente minimale, e questo blocco è il primo contenuto tecnico reale che vi entra.

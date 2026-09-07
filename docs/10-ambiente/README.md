@@ -8,17 +8,17 @@
 
 ## La macchina
 
-L'hardware è un vecchio desktop riconvertito: processore Intel i7-6700 a 3.40 GHz, 16 GB di RAM DDR4 e un SSD[^1] Crucial CT500P25SD8 da 500 GB, dato al 91 per cento di vita residua da una scansione con CrystalDiskInfo. È una macchina che Windows 11 avrebbe escluso per requisiti, e questo è il motivo per cui è stata riformattata su Linux invece di essere dismessa.
+L'hardware è un vecchio desktop riconvertito: processore Intel i7-6700 a 3.40 GHz, 16 GB di RAM DDR4 e un SSD[^1] Crucial CT500P2SSD8 da 500 GB con firmware P2CR033, al 91 per cento di vita residua secondo SMART letto il 2026-09-07. È una macchina che Windows 11 avrebbe escluso per requisiti, e questo è il motivo per cui è stata riformattata su Linux invece di essere dismessa.
 
 La scheda audio è esterna, una Focusrite Scarlett 2i2 di seconda generazione, con alimentazione phantom a 48 V disponibile. Questa scelta ha una conseguenza diretta sulla catena di misura, discussa nella pagina della fase di misura: rende possibile un microfono XLR da misura, e quindi rende non obbligatorio un microfono USB come l'UMIK-1.
 
-La distribuzione è Ubuntu Studio, non Ubuntu con i pacchetti audio aggiunti a mano. La differenza sta nel kernel a bassa latenza preconfigurato e nella selezione di pacchetti già montata per registrazione, mixing, mastering e live processing. La versione installata è la 25.04, fuori supporto, e la fotografia del 2026-09-07 mostra che il sistema non è mai stato aggiornato: 134 pacchetti pendenti, ultimo intervento di apt il 13 agosto 2025, e un riavvio richiesto.
+La distribuzione è Ubuntu Studio, non Ubuntu con i pacchetti audio aggiunti a mano. La differenza sta nella configurazione a bassa latenza predisposta e nella selezione di pacchetti già montata per registrazione, mixing, mastering e live processing. Sulla macchina quella configurazione non arriva da un kernel dedicato ma dal kernel generico con i parametri di avvio `preempt=full` e `threadirqs`, più i limiti di priorità in tempo reale per il gruppo audio: il dettaglio è nella fotografia, e il controllo sul nome del kernel darebbe un falso negativo. La versione installata è la 25.04, fuori supporto, e la fotografia del 2026-09-07 mostra che il sistema non è mai stato aggiornato: 134 pacchetti pendenti, ultimo intervento di apt il 13 agosto 2025, e un riavvio richiesto.
 
 ## Indice del blocco
 
 L'installazione del sistema, i requisiti e lo schema di partizionamento adottato stanno in [ubuntu-studio-installazione.md](ubuntu-studio-installazione.md).
 
-La diagnosi del blocco di aggiornamento verso la LTS[^2] successiva, con la procedura di verifica e le due strade possibili, sta in [ubuntu-lts-upgrade.md](ubuntu-lts-upgrade.md).
+La diagnosi dello stato di aggiornamento del sistema, con i dati letti dalla macchina e le due strade possibili, sta nella fotografia. La pagina che conteneva la ricostruzione fatta per ipotesi e' stata rimossa perche' tre delle sue quattro cause erano false: il record di quell'errore, con la ragione di ciascuna smentita, e' in MS-029 del registro dei microstep.
 
 La fotografia della macchina reale al 2026-09-07, con i dati letti sulla macchina e la diagnosi corretta che smentisce tre delle quattro cause ipotizzate per il blocco di aggiornamento, sta in [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md). È il primo documento del blocco costruito su misure invece che su ricostruzioni, e va letto prima della pagina sulla diagnosi.
 

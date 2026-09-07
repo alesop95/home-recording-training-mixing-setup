@@ -74,7 +74,17 @@ sudo apt list --installed 2>/dev/null | grep smartmontools
 sudo smartctl -a /dev/nvme0n1
 ```
 
-L'SSD era dato al 91 per cento di vita residua da una scansione fatta su Windows nel periodo dell'installazione originaria. Vale rileggerlo ora, prima di scriverci sopra un sistema nuovo: se il valore è crollato, la decisione da prendere non è più fra installazione e aggiornamento ma fra installazione e sostituzione del disco. Se `smartctl` non è presente si installa con `sudo apt install smartmontools`, ma su una 25.04 fuori supporto l'installazione da rete potrebbe non funzionare: in quel caso il controllo si rimanda al primo avvio del sistema nuovo, dove è comunque utile.
+L'SSD era dato al 91 per cento di vita residua da una scansione fatta su Windows nel periodo dell'installazione originaria. Vale rileggerlo ora, prima di scriverci sopra un sistema nuovo: se il valore è crollato, la decisione da prendere non è più fra installazione e aggiornamento ma fra installazione e sostituzione del disco.
+
+La verifica del 2026-09-07 ha accertato che `smartmontools` è **già installato**, alla versione `smartctl 7.4`, quindi l'avvertenza precedente su una possibile installazione da rete non serve. Ha accertato anche che non esiste una via non privilegiata per leggere i dati SMART, perché `/dev/nvme0` è `crw------- root root` e l'utente non appartiene al gruppo `disk`. Tre dati si ricavano comunque senza privilegi, e sono il modello reale del disco, il firmware e la temperatura del controller.
+
+```bash
+cat /sys/class/nvme/nvme0/model
+cat /sys/class/nvme/nvme0/firmware_rev
+cat /sys/class/nvme/nvme0/hwmon1/temp1_input
+```
+
+Il comando privilegiato va quindi eseguito da un terminale interattivo, e richiede l'opzione `-t` se lo si lancia via SSH, perché senza un terminale allocato `sudo` non ha dove chiedere la password. Il dettaglio, con le tre strade possibili e il costo di ciascuna, è in `fotografia-macchina-2026-09-07.md`.
 
 ### 0.4 Catena audio attuale
 
@@ -259,7 +269,7 @@ Le quattro partizioni vanno configurate così.
 
 | Partizione | Filesystem | Mount point | Formattare | Nota |
 |---|---|---|---|---|
-| EFI, circa 100 MB, FAT32 | non cambiare | `/boot/efi` | no | si riusa quella esistente; formattarla non è necessario e sarebbe un rischio inutile |
+| EFI, **1,1 GB** reali, FAT32 | non cambiare | `/boot/efi` | no | si riusa quella esistente; formattarla non è necessario e sarebbe un rischio inutile. Il documento sorgente la dichiarava intorno ai 100 MB: la misura reale è 1,1 GB con 6,2 MB occupati |
 | root, circa 80 GB, EXT4 | EXT4 | `/` | sì | è la partizione da azzerare, contiene solo sistema e programmi |
 | swap, circa 16 GB | swap | nessuno | sì | pari alla RAM, per tenere possibile l'ibernazione |
 | home, il resto, EXT4 | EXT4 | `/home` | **no** | qui vivono progetti, materiali trasferiti e prefix Wine |
