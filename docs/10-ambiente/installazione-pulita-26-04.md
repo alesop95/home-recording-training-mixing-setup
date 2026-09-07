@@ -376,39 +376,49 @@ Obiettivo: un ambiente pulito, con un prefix per programma, senza l'architettura
 
 La procedura completa, con il razionale di ogni passo, sta in `docs/10-ambiente/wine-configurazione.md`. Qui la sequenza nell'ordine di questa installazione, con le due differenze deliberate rispetto al passato.
 
-La prima differenza: non si aggiunge l'architettura `i386`. Serviva a WinISD, che per la decisione registrata come ADR-004 non viene installato perché ridondante rispetto a VituixCAD e Akabak. Non aggiungerla elimina un prefix, una architettura da mantenere e una classe di guasti, e rimuove anche uno dei fattori di attrito dei futuri aggiornamenti di rilascio.
+**Attenzione: questa fase è stata corretta il 2026-09-07 e la versione precedente era sbagliata.** Prescriveva quattro prefix a 64 bit con `dotnet48` per tutti, sulla base dell'affermazione del documento sorgente secondo cui Akabak 3 sarebbe a 64 bit. L'ispezione del prefix funzionante sulla macchina l'ha smentita: si veda ADR-016.
 
-La seconda differenza: si decide una sola provenienza dei pacchetti e non si mescola. Il repository ufficiale di WineHQ è preferibile per il supporto a .NET, che è la dipendenza critica di tutti e quattro i programmi.
+I fatti misurati. Il prefix in uso è `~/.wine` e il suo registro dichiara `#arch=win32`, cioè è a **32 bit**. `AKABAK.exe` installato è `PE32 executable, Intel 80386`, cioè **a 32 bit**, come `VACS_32.exe`. Nel prefix non c'è alcun `winetricks.log`, non c'è `Microsoft.NET/Framework/v4` e non ci sono font Microsoft di base: Akabak e VACS funzionano **senza nessuna delle dipendenze che il documento sorgente prescriveva**.
+
+Ne segue la prima differenza rispetto alla versione precedente di questa fase: **l'architettura `i386` va dichiarata**, perché è necessaria e non residua. Senza di essa il solo software del progetto che oggi funziona non funzionerebbe.
 
 ```bash
+sudo dpkg --add-architecture i386
+sudo apt update
 sudo apt install --install-recommends wine-stable winetricks
 wine --version
-which wine
 ```
 
-Esito atteso: versione non inferiore alla 9.0.
+La seconda differenza resta valida: si decide una sola provenienza dei pacchetti e non si mescola, perché la fotografia ha trovato due repository WineHQ attivi per due rilasci diversi di Ubuntu.
 
-Poi i prefix, uno per programma, tutti a 64 bit, tutti sotto una cartella dedicata così che si vedano insieme e nessuno finisca dentro un altro.
+Poi i prefix, quattro, con **architetture diverse** e non tutte a 64 bit.
 
 ```bash
-WINEARCH=win64 WINEPREFIX=~/wineprefixes/akabak64 winecfg
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
 WINEARCH=win64 WINEPREFIX=~/wineprefixes/vituixcad64 winecfg
 WINEARCH=win64 WINEPREFIX=~/wineprefixes/easefocus64 winecfg
 WINEARCH=win64 WINEPREFIX=~/wineprefixes/arta64 winecfg
 ```
 
-In ciascuno, dalla scheda delle applicazioni si imposta la versione di Windows su Windows 10, e dalla scheda della grafica si attiva la decorazione delle finestre da parte del window manager.
-
-Poi le dipendenze, nel prefix in cui servono e mai globalmente.
+Le dipendenze si installano soltanto dove servono, e per Akabak e VACS **non ne servono**: la configurazione funzionante non ne ha nessuna, e aggiungerne sarebbe riprodurre i tentativi del troubleshooting invece della soluzione.
 
 ```bash
-WINEPREFIX=~/wineprefixes/akabak64 winetricks -q dotnet48 vcrun2019 corefonts
 WINEPREFIX=~/wineprefixes/vituixcad64 winetricks -q dotnet48 corefonts
 WINEPREFIX=~/wineprefixes/easefocus64 winetricks -q dotnet48 corefonts vcrun2013 vcrun2019
 WINEPREFIX=~/wineprefixes/arta64 winetricks -q vcrun2019 corefonts
 ```
 
-Controllo di uscita della fase 7: i quattro prefix esistono, ciascuno contiene il proprio `system.reg`, e `winecfg` si apre in ciascuno senza errori su `kernel32.dll`. La mappa completa dei prefix, con i programmi e le dipendenze di ciascuno, è in `wine-corredo-progetto-stanza.md`.
+Per VituixCAD ed EASE Focus i requisiti restano quelli dichiarati dai produttori, perché su questa macchina non sono mai stati installati: non c'è nulla da riprodurre e nulla da smentire, quindi si parte da quanto documentato e si corregge sull'esito.
+
+In ciascun prefix, dalla scheda delle applicazioni di `winecfg` si imposta la versione di Windows su Windows 10, e dalla scheda della grafica si attiva la decorazione delle finestre da parte del window manager.
+
+Controllo di uscita della fase 7: i quattro prefix esistono, ciascuno contiene il proprio `system.reg`, e `winecfg` si apre in ciascuno senza errori su `kernel32.dll`. Il controllo che vale più degli altri è l'architettura dichiarata, perché è il punto su cui la versione precedente di questa fase sbagliava.
+
+```bash
+find ~/wineprefixes -maxdepth 2 -name system.reg -exec grep -H -m1 "#arch" {} +
+```
+
+Esito atteso: `win32` per `akabak32` e `win64` per gli altri tre. La mappa completa dei prefix, con i programmi e le dipendenze di ciascuno, è in `wine-corredo-progetto-stanza.md`.
 
 ```bash
 find ~/wineprefixes -maxdepth 2 -name "system.reg" -printf "%h\n"
@@ -422,11 +432,15 @@ Gli installer sono già sulla macchina, portati dalla fase 1.
 
 ```bash
 cd ~/electroacoustics/installers
-WINEPREFIX=~/wineprefixes/akabak64 wine AKABAK_Pro_v324b126.exe
-WINEPREFIX=~/wineprefixes/akabak64 wine VACS_64_v213b33.exe
+WINEPREFIX=~/wineprefixes/akabak32 wine AKABAK_Pro_v324b126.exe
+WINEPREFIX=~/wineprefixes/akabak32 wine VACS_32_v213b33.exe
 ```
 
-I due programmi vanno nello stesso prefix, perché si usano in sequenza e condividono le dipendenze. La variante a 32 bit di VACS resta come riserva e, se servisse, andrebbe in un prefix a 32 bit separato e non in questo.
+Due correzioni rispetto alla versione precedente di questo passo, entrambe da ADR-016. Il prefix è a **32 bit** e non a 64, perché l'eseguibile installato è PE32 i386. E la variante di VACS è la **32 bit**, non la 64: è quella che il lanciatore sulla scrivania della macchina invoca, cioè `VACS_32.exe` in `C:\Program Files\RDTeam\VACS2`.
+
+Quest'ultimo dato chiude una lacuna che lo storico di Akabak e VACS aveva dichiarato aperta, cioè quale variante fosse installata e come fosse stato risolto il fallimento iniziale di VACS. La risposta è che fu risolto usando la build a 32 bit, che era esattamente l'ipotesi formulata nella corrispondenza del 13 agosto 2025: era corretta.
+
+I due programmi vanno nello stesso prefix, perché si usano in sequenza e perché così è la configurazione che funziona sulla macchina. La variante a 64 bit di VACS resta come riserva non usata.
 
 ### 8.2 Inserimento del Release Code
 
@@ -435,7 +449,7 @@ I due programmi vanno nello stesso prefix, perché si usano in sequenza e condiv
 Si apre Akabak nel prefix corretto, si va nel menu di aiuto alla voce del release code, si controlla che il Machine Identifier mostrato sia lo stesso letto in fase 0.6, e si inserisce il codice permanente. I due valori sono nella scheda riservata sotto `_notes/`, non nel repository.
 
 ```bash
-WINEPREFIX=~/wineprefixes/akabak64 wine "C:/Program Files/RD Team/AKABAK/Akabak.exe"
+WINEPREFIX=~/wineprefixes/akabak32 wine "C:/Program Files/RDTeam/AKABAK/AKABAK.exe"
 ```
 
 Esito atteso: il Machine Identifier è invariato, il codice viene accettato, e all'avvio successivo di VACS non viene richiesto un secondo codice, perché un solo codice copre entrambi i programmi.

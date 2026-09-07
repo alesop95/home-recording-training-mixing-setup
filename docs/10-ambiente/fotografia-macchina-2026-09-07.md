@@ -114,7 +114,19 @@ Va infine registrato che **la Scarlett 2i2 non è collegata**. L'elenco USB non 
 
 C'è **un solo prefix**, ed è quello di default: `/home/alesop95/.wine`. Non esistono prefix separati per programma.
 
-Questo chiude una delle lacune dichiarate nello storico di Akabak e VACS, cioè in quale prefix i due programmi siano installati: sono nel prefix condiviso, secondo l'approccio che il documento sorgente chiamava fare come per Akabak e di cui riconosceva il rischio. La seconda lacuna, cioè quale variante di VACS sia installata e come fu risolto il suo fallimento iniziale, richiede di guardare dentro il prefix e resta aperta.
+Questo chiude **entrambe** le lacune dichiarate nello storico di Akabak e VACS. In quale prefix i due programmi siano installati: nel prefix condiviso di default, secondo l'approccio che il documento sorgente chiamava fare come per Akabak e di cui riconosceva il rischio. E quale variante di VACS sia installata e come fu risolto il suo fallimento iniziale: è la variante a **32 bit**, `VACS_32.exe`, ed è quella la risoluzione.
+
+L'ispezione del prefix ha però prodotto un esito molto più grande di due lacune chiuse, e lo si trova nella sezione seguente: il prefix è a 32 bit, e lo è anche Akabak.
+
+### Il prefix è a 32 bit, e Akabak con lui
+
+Il registro del prefix dichiara `#arch=win32` e la cartella `syswow64` è assente, come deve essere in un prefix a 32 bit. L'eseguibile installato `AKABAK.exe` è `PE32 executable, Intel 80386`, cioè a 32 bit, e lo stesso vale per `VACS_32.exe`; la libreria che entrambi portano si chiama `Matrix32.dll`. I due programmi stanno in `C:\Program Files\RDTeam`, e i lanciatori sulla scrivania invocano `wine-stable`, che su questa macchina esiste come comando e riporta la versione 9.0.
+
+Nel prefix non esiste alcun `winetricks.log`, non esiste `Microsoft.NET/Framework/v4` e non è installato alcun font Microsoft di base. Le librerie `msvcp*` presenti sono quelle che Wine fornisce di suo, non redistributable Microsoft installati.
+
+Ne segue che tre affermazioni del documento sorgente sono false: Akabak 3 non è a 64 bit, esiste ed è in uso una build a 32 bit, e non richiede .NET Framework 4.8 né font né runtime aggiuntivi. La lettura che riconcilia tutto è che la lista di dipendenze del sorgente descriveva ciò che era stato tentato durante il troubleshooting e non ciò che serviva, e la cronologia di apt del 13 agosto lo conferma mostrando installazioni, purghe e reinstallazioni, cioè la traccia di una ricerca per tentativi.
+
+Le conseguenze sono registrate in ADR-016 e hanno corretto le fasi 7 e 8 della procedura più quattro pagine di questo blocco. La più importante da sapere subito: l'architettura `i386` sul sistema è **necessaria** e non residua, e il consiglio precedente di non riprodurla sulla macchina nuova era sbagliato.
 
 La versione di Wine è `wine-9.0 (Ubuntu 9.0~repack-4build3)`, cioè quella dei repository Ubuntu e non di WineHQ, nonostante entrambi i repository WineHQ siano configurati. Il binario è `/usr/bin/wine`; non esistono `wine64` né `wine32` come comandi separati. I pacchetti installati sono `wine`, `wine-stable`, `wine32:i386`, `libwine`, `libwine:i386`, `fonts-wine` e `winetricks`.
 
@@ -201,10 +213,12 @@ La terza, cioè aggiungere l'utente al gruppo `disk`, è la peggiore e va nomina
 
 ## Che cosa resta da fare in fase 0
 
-Tre voci, di cui due richiedono privilegi che l'accesso via chiave non concede in modo non interattivo, perché `sudo` su questa macchina chiede la password.
+Delle tre voci che questa sezione elencava come pendenti, due sono chiuse nella stessa giornata e la terza è diventata irrilevante. Le si registra qui con il loro esito, perché una fotografia serve a dire come sono andate le verifiche, non a conservare l'elenco di quelle che non erano ancora partite.
 
-Lo stato di salute dell'SSD con `smartctl`, che è il controllo il cui esito potrebbe cambiare la decisione da installazione a sostituzione del disco. Richiede `sudo`; `smartmontools` è già installato, quindi non serve altro. La sezione precedente spiega perché non esiste una via non privilegiata e quali sono le tre strade.
+Lo stato di salute dell'SSD con `smartctl` era il controllo il cui esito poteva cambiare la decisione da installazione a sostituzione del disco. **Eseguito dall'utente con esito positivo**, `PASSED` e usura al 9 per cento: la sezione dedicata sopra ne riporta la lettura completa. La decisione resta quindi fra installazione pulita e aggiornamento in posto, e non si sposta sulla sostituzione del disco.
 
-L'esito reale di `sudo apt update`, che le prove HTTP rendono prevedibile ma non certo.
+La verifica del Machine Identifier di Akabak era un controllo manuale in interfaccia grafica, da fare davanti alla macchina. **Eseguito**: il valore mostrato dal programma coincide con quello conservato, il release code inserito coincide anch'esso e il programma dichiara la licenza valida. Il dettaglio, con i tre fatti collaterali che le finestre hanno portato in dote fra cui la conferma indipendente dei 32 bit, sta in `docs/90-riferimenti/licenze-e-registrazioni.md`.
 
-La verifica del Machine Identifier di Akabak, che è un controllo manuale in interfaccia grafica e va fatto davanti alla macchina, con la cattura di uno screenshot della finestra del release code.
+L'esito reale di `sudo apt update` resta l'unica voce non eseguita, e **ADR-013 l'ha resa irrilevante**: su un sistema che verrà azzerato quell'esito non informa nessuna decisione. Le prove HTTP lo rendevano comunque prevedibile, dato che archivio, mirror e security rispondono 200, ma prevedibile non è verificato e la voce si dichiara non eseguita invece di essere fatta passare per compiuta.
+
+Ne segue che la fase 0 è chiusa nella sostanza: tutte le verifiche che potevano cambiare una decisione sono state fatte, e nessuna l'ha cambiata.

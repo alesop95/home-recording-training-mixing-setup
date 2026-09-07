@@ -18,7 +18,7 @@ La distribuzione è Ubuntu Studio, non Ubuntu con i pacchetti audio aggiunti a m
 
 L'installazione del sistema, i requisiti e lo schema di partizionamento adottato stanno in [ubuntu-studio-installazione.md](ubuntu-studio-installazione.md).
 
-La diagnosi dello stato di aggiornamento del sistema, con i dati letti dalla macchina e le due strade possibili, sta nella fotografia. La pagina che conteneva la ricostruzione fatta per ipotesi e' stata rimossa perche' tre delle sue quattro cause erano false: il record di quell'errore, con la ragione di ciascuna smentita, e' in MS-029 del registro dei microstep.
+La diagnosi dello stato di aggiornamento del sistema, con i dati letti dalla macchina e le due strade possibili, sta nella fotografia. La pagina che conteneva la ricostruzione fatta per ipotesi è stata rimossa perché tre delle sue quattro cause erano false: il record di quell'errore, con la ragione di ciascuna smentita, è in MS-029 del registro dei microstep.
 
 La fotografia della macchina reale al 2026-09-07, con i dati letti sulla macchina e la diagnosi corretta che smentisce tre delle quattro cause ipotizzate per il blocco di aggiornamento, sta in [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md). È il primo documento del blocco costruito su misure invece che su ricostruzioni, e va letto prima della pagina sulla diagnosi.
 

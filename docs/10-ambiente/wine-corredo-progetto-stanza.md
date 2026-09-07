@@ -177,7 +177,7 @@ Il consiglio operativo che ne deriva è di non dichiarare l'architettura `i386` 
 
 | Prefix | Architettura | Programmi | Dipendenze |
 |---|---|---|---|
-| `~/wineprefixes/akabak64` | 64 bit | Akabak 3, VACS | `dotnet48`, `vcrun2019`, `corefonts` |
+| `~/wineprefixes/akabak32` | **32 bit** | Akabak 3, VACS a 32 bit | nessuna: la configurazione funzionante non ha winetricks, .NET né corefonts |
 | `~/wineprefixes/vituixcad64` | 64 bit | VituixCAD 2 | `dotnet48`, `corefonts` |
 | `~/wineprefixes/easefocus64` | 64 bit | EASE Focus 3.1.260, servizio database AFMG | `dotnet48`, `corefonts`, `vcrun2013`, `vcrun2019` |
 | `~/wineprefixes/arta64` | 64 bit | ARTA 1.7.1 | `vcrun2019`, `corefonts` |

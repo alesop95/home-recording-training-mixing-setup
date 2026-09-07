@@ -4,7 +4,7 @@
 
 # Prefix, architettura e licenze in Wine
 
-> Modello mentale di Wine e sue conseguenze operative. Spiega che cosa è un prefix, perché conviene averne più di uno, come si scegle fra 32 e 64 bit e perché una licenza legata alla macchina sopravvive alla cancellazione di tutto.
+> Modello mentale di Wine e sue conseguenze operative. Spiega che cosa è un prefix, perché conviene averne più di uno, come si sceglie fra 32 e 64 bit e perché una licenza legata alla macchina sopravvive alla cancellazione di tutto.
 
 ## Wine è uno, i prefix sono molti
 
@@ -15,9 +15,9 @@ Wine è il motore, e di quello ce n'è una sola installazione: il binario in `/u
 Il prefix di default è `~/.wine`. Per crearne altri si valorizza la variabile `WINEPREFIX` davanti al comando, e la prima esecuzione di uno strumento di Wine in una cartella inesistente la crea e la inizializza.
 
 ```bash
-WINEPREFIX=~/wineprefixes/akabak64 winecfg
-WINEPREFIX=~/wineprefixes/vituixcad64 winecfg
-WINEPREFIX=~/wineprefixes/winisd32 winecfg
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
+WINEARCH=win64 WINEPREFIX=~/wineprefixes/vituixcad64 winecfg
+WINEARCH=win64 WINEPREFIX=~/wineprefixes/easefocus64 winecfg
 ```
 
 Il vantaggio dell'isolamento è concreto e non teorico. Le dipendenze installate con `winetricks` finiscono soltanto nel prefix in cui si lavora, quindi un programma che pretende una versione particolare di .NET o di un runtime Visual C++ non può rompere gli altri. Il costo è spazio su disco e qualche variabile in più da scrivere nei comandi.
@@ -25,7 +25,7 @@ Il vantaggio dell'isolamento è concreto e non teorico. Le dipendenze installate
 Il backup di un ambiente configurato è la copia della sua cartella, e questa è la proprietà che rende Wine comodo da amministrare.
 
 ```bash
-cp -r ~/wineprefixes/akabak64 ~/wineprefixes/akabak64-backup
+cp -r ~/wineprefixes/akabak32 ~/wineprefixes/akabak32-backup
 ```
 
 ## La scelta fra 32 e 64 bit
@@ -34,7 +34,7 @@ Alla creazione di un prefix Wine deve decidere se simulare un ambiente Windows a
 
 ```bash
 WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
-WINEPREFIX=~/wineprefixes/akabak64 winecfg
+WINEARCH=win64 WINEPREFIX=~/wineprefixes/vituixcad64 winecfg
 ```
 
 Il prefix a 32 bit conviene al software legacy. I programmi vecchi, quelli pensati per Windows XP, Vista o 7 a 32 bit, ci funzionano meglio, e molti pacchetti di `winetricks` si aspettano proprio quell'ambiente e vi si installano senza intoppi. Il limite è lo stesso che avrebbero su Windows reale: un processo a 32 bit non può allocare più di 4 GB di memoria.
@@ -47,8 +47,9 @@ La tabella riassume la scelta per i programmi di questo progetto.
 
 | Programma | Architettura | Prefix | Motivo |
 |---|---|---|---|
-| Akabak 3 | 64 bit | `~/wineprefixes/akabak64` | nessuna build a 32 bit, e la simulazione beneficia di più di 4 GB per processo |
-| VituixCAD 2 | 64 bit | `~/wineprefixes/vituixcad64` | nativo a 64 bit, e .NET 4.8 non si installa in modo affidabile in un prefix a 32 |
+| Akabak 3 | **32 bit** | `~/wineprefixes/akabak32` | l'eseguibile installato è PE32 i386 e il prefix funzionante è `win32`: si veda ADR-016, che smentisce l'affermazione del documento sorgente sui 64 bit |
+| VACS 2.1.3 | **32 bit** | `~/wineprefixes/akabak32` | variante `VACS_32.exe`, nello stesso prefix di Akabak perché si usano in sequenza |
+| VituixCAD 2 | 64 bit | `~/wineprefixes/vituixcad64` | nativo a 64 bit per dichiarazione del produttore, non verificato su questa macchina perché mai installato |
 | WinISD | 32 bit | `~/wineprefixes/winisd32` | distribuito solo a 32 bit, con runtime datati |
 | EASE Focus 3 | 64 bit | `~/wineprefixes/wine-ease` | basato su .NET 4.x, e alcuni moduli GLL portano DLL proprie |
 

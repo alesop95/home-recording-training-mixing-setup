@@ -29,3 +29,17 @@ Il rapporto con l'esistente: se la nuova interfaccia sostituisce la Scarlett o l
 Il criterio di completamento. Una decisione documentata con i criteri, i modelli confrontati, la verifica di compatibilità Linux e la motivazione della scelta, oppure la decisione motivata di non comprare nulla e restare sulla Scarlett.
 
 Nota di priorità. Non blocca nulla del progetto dei monitor, che sulla Scarlett attuale ha tutto ciò che gli serve. Blocca invece l'home recording multitraccia, cioè lo scopo di questo progetto, quindi qui è la prima voce.
+
+## PA-002 - Allineare la copia del template al progetto principale
+
+Data di apertura: 2026-09-07. Stato: aperta, priorità bassa, è una decisione dell'utente su materiale di sistema.
+
+Che cosa va fatto. Cinque modelli sotto `.claude/templates/` di questo progetto non rispettano la convenzione Markdown della riga sorgente unica, mentre le copie corrispondenti in `diy-2way-monitors-home` sì. Sono `CLAUDE.local.md` e, sotto `_notes/`, `DIARIO.md`, `RESOCONTO.md`, `RESUME-PROMPT.md` e `TEST-CHECKLIST.md`.
+
+Da dove viene. La verifica `python tools/md-unwrap.py --check .` eseguita in questo progetto il 2026-09-07 segnala quei cinque file, per un totale di quattordici righe da unire. La stessa verifica nel progetto principale non segnala nulla, e il confronto dei file mostra che sono diversi: la copia del template qui è più vecchia di una propagazione. Non è quindi un difetto nuovo ma un ritardo di allineamento.
+
+Perché non è urgente. Sono modelli, cioè file che si copiano quando si istanzia qualcosa, non documentazione attiva di questo progetto. La non conformità non produce nessun effetto finché uno di essi non viene usato, e in quel caso lo strumento la corregge sul file istanziato.
+
+Il criterio di completamento. La verifica `--check` pulita anche in questo progetto, oppure la decisione motivata di non tenere allineata la copia del template qui, dato che il progetto principale ne conserva una corretta.
+
+Nota sulla relazione con l'altro progetto. Questa voce è parente di PA-003 del progetto principale, che riguarda quattro correzioni da propagare all'indietro verso `template-claude-developing`. Conviene trattarle insieme, perché la sorgente comune è la stessa e correggerla lì risolve entrambe le copie invece di rincorrerle una per una.
