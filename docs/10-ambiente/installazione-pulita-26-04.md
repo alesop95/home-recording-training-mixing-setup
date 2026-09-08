@@ -264,7 +264,7 @@ Dalla postazione Windows lo strumento è Rufus, come per l'installazione origina
 La verifica dello strumento merita una riga, perché la strada corretta qui è diversa da quella usata per l'immagine. Per l'immagine si confronta una somma di controllo firmata; per un eseguibile Windows la verifica più forte è la firma Authenticode, che PowerShell controlla contro le radici di certificazione fidate del sistema invece che contro un valore pubblicato sullo stesso sito da cui si è scaricato il file.
 
 ```powershell
-Get-AuthenticodeSignature "E:\_iso-ubuntu-studio\rufus-4.15p.exe" | Format-List Status, SignerCertificate
+Get-AuthenticodeSignature "C:\Users\Utente\Desktop\_iso-ubuntu-studio\rufus-4.15p.exe" | Format-List Status, SignerCertificate
 ```
 
 Controllo di uscita: `Status` vale `Valid` e il certificato è intestato a `Akeo Consulting`, che è l'autore di Rufus, con emittente una autorità di firma del codice. Un `NotSigned` o un `HashMismatch` a questo punto significa file manomesso o incompleto, e in quel caso si riscarica invece di procedere.
