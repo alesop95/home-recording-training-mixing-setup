@@ -355,18 +355,20 @@ Controllo: la mappa coincide con quella registrata in fase 0.2. In particolare s
 
 ### 4.2 Partizionamento manuale
 
-Si scegli il partizionamento manuale, cioè la voce che l'installatore chiama *Something else* o equivalente. Non si scegli in nessun caso la cancellazione del disco né l'installazione guidata, perché entrambe rifarebbero la tabella delle partizioni e porterebbero via `/home`.
+Si sceglie il partizionamento manuale, cioè la voce che l'installatore chiama *Something else* o *Partizionamento manuale*. Non si sceglie in nessun caso la cancellazione del disco né l'installazione guidata, perché entrambe rifarebbero la tabella delle partizioni e porterebbero via `/home`. La schermata in cui si decide compare dopo lingua, tastiera e rete, ed è il primo dei tre soli momenti in cui questa fase si può sbagliare.
 
 Le quattro partizioni vanno configurate così.
 
-| Partizione | Filesystem | Mount point | Formattare | Nota |
+| Partizione | Dimensione reale | Mount point | Formattare | Nota |
 |---|---|---|---|---|
-| EFI, **1,1 GB** reali, FAT32 | non cambiare | `/boot/efi` | no | si riusa quella esistente; formattarla non è necessario e sarebbe un rischio inutile. Il documento sorgente la dichiarava intorno ai 100 MB: la misura reale è 1,1 GB con 6,2 MB occupati |
-| root, circa 80 GB, EXT4 | EXT4 | `/` | sì | è la partizione da azzerare, contiene solo sistema e programmi |
-| swap, circa 16 GB | swap | nessuno | sì | pari alla RAM, per tenere possibile l'ibernazione |
-| home, il resto, EXT4 | EXT4 | `/home` | **no** | qui vivono progetti, materiali trasferiti e prefix Wine |
+| `nvme0n1p1`, FAT32 | 1 GB, 6,2 MB occupati | `/boot/efi` | **no** | si riusa quella esistente; formattarla non è necessario e sarebbe un rischio inutile. Il documento sorgente la dichiarava intorno ai 100 MB |
+| `nvme0n1p2`, ext4 | 73 GB, 32 per cento usato | `/` | **sì**, ext4 | è la sola partizione da azzerare, contiene solo sistema e programmi |
+| `nvme0n1p3`, swap | | nessuno | sì | si riusa così come è |
+| `nvme0n1p4`, ext4 | **346 GB**, 1 per cento usato | `/home` | **no** | qui vivono progetti, materiali trasferiti e prefix Wine |
 
-Il punto di attenzione assoluto è l'ultima riga. La casella di formattazione della partizione `/home` deve restare vuota. Prima di confermare, conviene rileggere la schermata di riepilogo che l'installatore mostra e verificare che fra le operazioni previste non compaia una formattazione di quella partizione.
+Il punto di attenzione assoluto è l'ultima riga, e la trappola concreta va nominata perché non è la casella in sé: nell'installatore la casella di formattazione **si attiva da sola** quando si seleziona un filesystem nel menu della riga. Su `/home` il filesystem non si tocca affatto, si imposta soltanto il punto di montaggio, ed è il secondo dei tre momenti in cui questa fase si può sbagliare.
+
+Il terzo momento è la schermata di riepilogo che l'installatore mostra prima di scrivere, ed è l'unico controllo che conta davvero, perché elenca le operazioni che verranno eseguite e perché fino a quel pulsante nulla è stato scritto sul disco. Deve comparire una formattazione **soltanto** per `nvme0n1p2`. Se la parola compare accanto a `nvme0n1p4` o a `nvme0n1p1`, si torna indietro.
 
 Se l'installatore lo permette, conviene catturare uno screenshot della schermata di riepilogo prima di confermare: è la prova di che cosa è stato chiesto, e in caso di esito inatteso è l'unico documento che dice se l'errore era nella richiesta o nell'esecuzione.
 

@@ -24,6 +24,8 @@ La fotografia della macchina reale al 2026-09-07, con i dati letti sulla macchin
 
 La procedura operativa completa di installazione pulita della 26.04 LTS, in undici fasi, con la fotografia dello stato attuale, i controlli di uscita di ogni fase e il piano di rientro, sta in [installazione-pulita-26-04.md](installazione-pulita-26-04.md). Include la configurazione della sospensione automatica e dell'accesso SSH, che sono i due motivi per cui la macchina risultava irraggiungibile.
 
+La riduzione di quella procedura a ciò che serve avere sotto gli occhi davanti alla macchina, cioè la scheda che si stampa e si porta accanto al computer da azzerare, sta in [scheda-reinstallazione.md](scheda-reinstallazione.md). Non sostituisce la procedura e non ne è un riassunto fedele: è una selezione fatta per un lettore che non ha la postazione di sviluppo davanti, quindi dove le due divergono ha ragione la procedura. Il `.docx` stampabile si genera da lì con `python tools/make-scheda-docx.py`.
+
 La differenza concettuale fra Wine, un emulatore e una macchina virtuale, che è il punto da cui dipende tutto il resto della configurazione, sta in [wine-vs-emulatore.md](wine-vs-emulatore.md).
 
 Il modello dei prefix, la scelta fra 32 e 64 bit e il comportamento delle licenze legate alla macchina stanno in [wine-prefix-e-dipendenze.md](wine-prefix-e-dipendenze.md).
