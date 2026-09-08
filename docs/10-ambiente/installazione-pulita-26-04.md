@@ -6,7 +6,9 @@
 
 > Procedura operativa completa. Ogni passo dichiara che cosa si fa, perché si fa, il comando o l'azione esatta, e come si verifica che sia riuscito. La procedura è divisa in undici fasi e va eseguita nell'ordine: le fasi 0 e 1 raccolgono e mettono in salvo informazioni che dopo la fase 4 non sarebbero più recuperabili, quindi saltarle non è una scorciatoia ma una perdita di dati.
 >
-> Stato al 2026-09-07: la fase 0 è eseguita nella sua parte non privilegiata, e il suo esito ha corretto questa stessa procedura in due punti, cioè la premessa e il controllo del kernel nella fase 6. Le fasi da 1 in avanti non sono ancora state eseguite. Ogni fase viene spuntata nel registro dei microstep man mano che si compie, con l'esito reale accanto a quello atteso.
+> Stato al 2026-09-08. La fase 0 è chiusa nella sostanza: la parte non privilegiata è eseguita, e delle tre voci privilegiate le due che potevano spostare una decisione sono state eseguite dall'utente, cioè lo stato di salute del disco e la verifica del Machine Identifier. La fase 1 è compiuta e verificata. Della fase 2 sono compiute la 2.1 e la 2.2, cioè immagine scaricata e verificata per somma e per firma; resta la 2.3. Le fasi da 3 in avanti non sono ancora state eseguite. Ogni fase viene spuntata nel registro dei microstep man mano che si compie, con l'esito reale accanto a quello atteso.
+>
+> Questa procedura è già stata corretta quattro volte dall'esito reale delle sue prime fasi, e vale saperlo prima di eseguirla: la premessa e il controllo del kernel della fase 6 dalla fase 0, le fasi 7 e 8 da ADR-016 sull'architettura a 32 bit, e la fase 2 dalla fonte ufficiale dell'immagine, che pubblica un point release che questa pagina non nominava. Chi eseguisse una versione precedente otterrebbe un ambiente in cui Akabak non parte.
 
 ## Premessa: perché una installazione e non un aggiornamento
 
@@ -16,7 +18,7 @@ Dei quattro motivi per cui questa strada era stata preferita all'aggiornamento i
 
 Si aggiunge un motivo che prima non c'era, perché richiedeva il dato: `/home` contiene 3,7 GB su 369 disponibili, quindi il costo del salvataggio è trascurabile e il rischio dell'operazione più basso di quanto si potesse stimare.
 
-Poiché una delle quattro gambe è venuta meno, la decisione va riconfermata dall'utente su questa base e non data per acquisita.
+Poiché una delle quattro gambe era venuta meno, la decisione andava riconfermata dall'utente su questa base e non data per acquisita. **È stata riconfermata il 2026-09-07**, sui tre motivi che restano e con l'ambiente pulito come dominante, e la riconferma è registrata come ADR-013, che chiude PA-006.
 
 Il fatto che rende l'operazione a basso rischio è il partizionamento scelto all'installazione originaria, con `/home` su una partizione separata. È la decisione che oggi paga il dividendo più alto, e va trattata con rispetto: l'unico modo di rovinare questa procedura è formattare `/home` per distrazione nella fase 4.
 
@@ -207,27 +209,81 @@ Controllo di uscita della fase 1: la copia esiste, la sua dimensione è coerente
 
 ### 2.1 Scaricare l'immagine
 
-L'immagine di Ubuntu Studio 26.04 LTS si scarica dal sito ufficiale del progetto. Va verificata l'esistenza e la denominazione esatta della versione dal sito, e non dedotta dal calendario dei rilasci: la cadenza di Ubuntu è regolare e le derivate ufficiali seguono la stessa numerazione, ma la conferma va presa dalla fonte.
+La regola di questa fase è non dedurre il nome dell'immagine dal calendario dei rilasci ma prenderlo dalla fonte, e la sua ragione si è vista subito: la verifica del 2026-09-08 sull'archivio ufficiale ha mostrato che nella cartella del rilascio convivono **due** immagini, la 26.04 iniziale e la **26.04.1**, cioè il primo point release. È quest'ultima quella da prendere, perché incorpora le correzioni accumulate dopo il rilascio, fra cui quelle dell'installatore e del kernel, ed è anche la versione che `do-release-upgrade` offriva sulla macchina.
 
-Insieme all'immagine si scaricano i file delle somme di controllo e la firma.
+Il nome esatto è `ubuntustudio-26.04.1-desktop-amd64.iso`, pesa 6,6 GB, e sta sotto `https://cdimage.ubuntu.com/ubuntustudio/releases/26.04/release/`. Nella stessa cartella stanno il file delle somme di controllo e la sua firma, che si scaricano insieme all'immagine e non dopo, perché servono a decidere se l'immagine è buona prima di scriverla.
+
+```bash
+curl -O "https://cdimage.ubuntu.com/ubuntustudio/releases/26.04/release/SHA256SUMS" -O "https://cdimage.ubuntu.com/ubuntustudio/releases/26.04/release/SHA256SUMS.gpg"
+curl -L -C - --retry 5 -O "https://cdimage.ubuntu.com/ubuntustudio/releases/26.04/release/ubuntustudio-26.04.1-desktop-amd64.iso"
+```
+
+L'opzione `-C -` merita una riga, perché su un file da 6,6 GB fa la differenza fra un intoppo e un lavoro da rifare: dice a `curl` di riprendere da dove si era interrotto invece di ricominciare, e va abbinata a `--retry` perché una interruzione di rete non richieda un intervento manuale.
 
 ### 2.2 Verificare l'immagine prima di scriverla
 
 Questo passo si salta spesso e non va saltato: una immagine corrotta produce una installazione che sembra riuscita e fallisce settimane dopo in modo inspiegabile.
 
+Le verifiche sono due e rispondono a domande diverse, il che è la ragione per cui non ne basta una. La prima chiede se il file scaricato è integro, cioè se coincide con quello che l'archivio dichiara. La seconda chiede se quella dichiarazione viene davvero da chi dice di essere, cioè se il file delle somme non è stato sostituito insieme all'immagine. Una somma di controllo confrontata con un file scaricato dallo stesso posto dell'immagine, da sola, non protegge da chi controlli quel posto.
+
 ```bash
 sha256sum -c SHA256SUMS 2>&1 | grep -i ubuntustudio
+gpg --keyid-format long --verify SHA256SUMS.gpg SHA256SUMS
 ```
 
-Controllo di uscita: la riga corrispondente all'immagine scaricata dice `OK`.
+Controllo di uscita del primo comando: la riga corrispondente all'immagine scaricata dice `OK`. Le righe delle immagini non scaricate dicono che il file non esiste, ed è normale, dato che il file delle somme elenca entrambe le immagini del rilascio. La somma attesa per il point release, registrata qui perché un valore verificato vale più di una istruzione da seguire, è `2b25d06203c8a2f60da23e20e3afd1fa400f8ff8104fd074c1b7e49fc3768084`.
+
+Controllo di uscita del secondo comando: la firma risulta buona e appartiene alla chiave di firma delle immagini di Ubuntu. Alla prima esecuzione su una macchina nuova il comando dice che la chiave pubblica non è disponibile, che non è un fallimento della verifica ma la sua impossibilità: la chiave va importata prima, dal server di chiavi, e il suo identificativo si legge nel messaggio stesso.
+
+```bash
+gpg --keyserver keyserver.ubuntu.com --recv-keys 843938DF228D22F7B3742BC0D94AA3F0EFE21092
+```
+
+L'esito osservato il 2026-09-08, dopo l'importazione, è il seguente, e va riportato per intero perché contiene un avviso che si prende per un fallimento e non lo è.
+
+```
+gpg: Signature made Thu Aug 27 23:26:36 2026
+gpg:                using RSA key 843938DF228D22F7B3742BC0D94AA3F0EFE21092
+gpg: Good signature from "Ubuntu CD Image Automatic Signing Key (2012) <cdimage@ubuntu.com>"
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+```
+
+La riga che conta è la terza, `Good signature`, e dice che il file delle somme è integro e firmato da quella chiave. L'avviso che segue non contraddice la riga precedente e non va letto come una verifica fallita: dice una cosa diversa, cioè che nel proprio anello di chiavi quella chiave non è stata firmata da nessuno di cui si sia dichiarata la fiducia. Sono due domande separate, l'autenticità della firma e la fiducia nella chiave, e `gpg` risponde alla prima con un sì e alla seconda con un non lo so. L'avviso sparisce solo dichiarando manualmente la fiducia in quella chiave, che è una scelta di chi la usa e non un requisito della verifica.
+
+Va detto con precisione che cosa questa seconda verifica dimostra e che cosa no, perché è facile darle un valore che non ha. Dimostra che il file delle somme è stato firmato dalla chiave indicata. Non dimostra che quella chiave sia di Canonical, se la si è appena scaricata da un server di chiavi senza confrontarla con una fonte indipendente: la fiducia si ancora al fatto che l'impronta della chiave è pubblicata dalla distribuzione e che la stessa chiave firma i rilasci da anni. È comunque una difesa concreta, perché costringe un attacco a compromettere anche la chiave e non soltanto il sito.
+
+Su Windows questi due comandi si eseguono nella shell POSIX che accompagna git, dove `sha256sum` e `gpg` esistono entrambi. Un dettaglio che altrimenti fa sospettare un file diverso: il file delle somme di Ubuntu scrive il nome precedendolo con un asterisco, nella forma `hash *nome`, che è la notazione della modalità binaria, e la stessa notazione la produce `sha256sum` nella shell di git, mentre su Linux la forma abituale è con due spazi. È la stessa trappola documentata in MS-039 di `docs/OPERATIONS-LOG.md`, dove un confronto fra impronte identiche risultava negativo per il solo separatore.
 
 ### 2.3 Scrivere la chiavetta
 
-Dalla postazione Windows si usa Rufus, come per l'installazione originaria, in modalità di scrittura diretta dell'immagine. Dalla macchina Linux, se ancora funzionante, lo strumento equivalente è il seguente, dove il dispositivo di destinazione va identificato con certezza prima di lanciarlo.
+Il supporto deve essere di almeno 16 GB. Il vincolo non viene da un margine di prudenza ma dalla dimensione dell'immagine, 6,64 GiB: su una chiavetta da 8 GB, che di capacità utile ne offre circa 7,45 GiB, l'immagine entrerebbe per un soffio in modalità di scrittura diretta e non entrerebbe affatto se lo strumento dovesse costruire un filesystem con spazio di servizio. Una da 16 GB toglie la questione di mezzo.
+
+Dalla postazione Windows lo strumento è Rufus, come per l'installazione originaria. Non richiede installazione: la variante il cui nome termina con `p` è portabile, cioè non scrive nel registro e non lascia niente sul sistema, e si scarica dalla pagina dei rilasci del progetto. La versione usata il 2026-09-08 è la 4.15.
+
+La verifica dello strumento merita una riga, perché la strada corretta qui è diversa da quella usata per l'immagine. Per l'immagine si confronta una somma di controllo firmata; per un eseguibile Windows la verifica più forte è la firma Authenticode, che PowerShell controlla contro le radici di certificazione fidate del sistema invece che contro un valore pubblicato sullo stesso sito da cui si è scaricato il file.
+
+```powershell
+Get-AuthenticodeSignature "E:\_iso-ubuntu-studio\rufus-4.15p.exe" | Format-List Status, SignerCertificate
+```
+
+Controllo di uscita: `Status` vale `Valid` e il certificato è intestato a `Akeo Consulting`, che è l'autore di Rufus, con emittente una autorità di firma del codice. Un `NotSigned` o un `HashMismatch` a questo punto significa file manomesso o incompleto, e in quel caso si riscarica invece di procedere.
+
+Le impostazioni da usare, con la ragione di ciascuna invece del solo elenco.
+
+Il dispositivo è la chiavetta, e va controllato due volte perché Rufus la cancella per intero. La selezione di avvio è disco o immagine ISO, puntata al file verificato.
+
+La scelta che conta davvero è la modalità di scrittura, che Rufus chiede con una finestra quando l'immagine è di tipo ibrido, offrendo modalità immagine ISO o modalità immagine DD. **Va scelta DD.** La ragione è precisa: in modalità ISO lo strumento costruisce un filesystem sulla chiavetta e vi copia i file dell'immagine, e il filesystem che usa per compatibilità di avvio è FAT32, che non può contenere un singolo file più grande di 4 GB. Dentro una immagine live di questa dimensione il filesystem compresso del sistema supera quella soglia, quindi la modalità ISO inciampa oppure obbliga lo strumento a rimedi come lo splittaggio del file o il passaggio a NTFS con un caricatore di avvio aggiuntivo. In modalità DD l'immagine viene copiata byte per byte, senza costruire nulla: la chiavetta risulta identica al file di cui si è verificata l'impronta, e il problema del limite di FAT32 non si presenta. È anche la modalità che rende la chiavetta verificabile a posteriori, perché il contenuto scritto coincide con l'immagine.
+
+Lo schema di partizione è GPT e il sistema di destinazione è UEFI senza compatibilità CSM, perché l'installazione esistente su questa macchina è UEFI e la sua partizione EFI va riusata, come stabilisce la fase 3.
+
+Una avvertenza sul dopo, che è il punto in cui si rovina una chiavetta appena fatta. Terminata la scrittura in modalità DD, Windows vede sulla chiavetta uno spazio non allocato oltre le partizioni dell'immagine e propone di formattarlo, a volte con un avviso che il disco va inizializzato. **Va rifiutato.** Quell'operazione riscrive la tabella delle partizioni e rende il supporto non avviabile, e il fatto che l'avviso sembri una richiesta di manutenzione ordinaria è esattamente ciò che la rende insidiosa.
+
+Dalla macchina Linux, se ancora funzionante, lo strumento equivalente è il seguente, dove il dispositivo di destinazione va identificato con certezza prima di lanciarlo.
 
 ```bash
 lsblk -f
-sudo dd if=ubuntustudio-26.04-desktop-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync
+sudo dd if=ubuntustudio-26.04.1-desktop-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync
 ```
 
 Attenzione al nome del dispositivo: `dd` scrive dove gli si dice senza chiedere conferma, e indicare per errore il disco di sistema invece della chiavetta lo distrugge. Il primo comando serve a identificare la chiavetta dalla sua dimensione e dalla sua etichetta, e va eseguito con la chiavetta inserita e poi rimossa, per confrontare i due elenchi.
