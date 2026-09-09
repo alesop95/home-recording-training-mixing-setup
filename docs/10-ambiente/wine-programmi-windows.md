@@ -14,7 +14,7 @@ Va chiarito un punto su cui il documento sorgente è internamente contraddittori
 
 La versione scaricabile dal sito dell'autore non è una demo limitata nel tempo o nelle funzioni: è la versione completa, che richiede licenza per uso commerciale ed è gratuita per uso privato, hobbistico o di ricerca senza scopo di lucro, previa registrazione. La licenza di questo progetto è una student license concessa dall'autore, e il dettaglio della procedura sta nella pagina delle licenze.
 
-**Correzione del 2026-09-07, che smentisce quanto il documento sorgente affermava.** L'eseguibile installato sulla macchina, `AKABAK.exe`, è `PE32 executable, Intel 80386`, cioè **a 32 bit**, e vive in un prefix il cui registro dichiara `#arch=win32`. Il sorgente affermava architettura a 64 bit senza build alternativa, requisito di Windows 10 o 11 a 64 bit e bisogno di .NET 4.8: nessuna delle tre affermazioni è confermata dall'installazione funzionante, che non ha alcun `winetricks.log`, alcun `Microsoft.NET/Framework/v4` e alcun font Microsoft di base. Serve quindi un prefix a **32 bit**, senza dipendenze aggiuntive. Il quadro è in ADR-016.
+*Correzione del 2026-09-07, che smentisce quanto il documento sorgente affermava.* L'eseguibile installato sulla macchina, `AKABAK.exe`, è `PE32 executable, Intel 80386`, cioè *a 32 bit*, e vive in un prefix il cui registro dichiara `#arch=win32`. Il sorgente affermava architettura a 64 bit senza build alternativa, requisito di Windows 10 o 11 a 64 bit e bisogno di .NET 4.8: nessuna delle tre affermazioni è confermata dall'installazione funzionante, che non ha alcun `winetricks.log`, alcun `Microsoft.NET/Framework/v4` e alcun font Microsoft di base. Serve quindi un prefix a *32 bit*, senza dipendenze aggiuntive. Il quadro è in ADR-016.
 
 ```bash
 WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
@@ -28,17 +28,17 @@ All'installer si può accettare il percorso predefinito. Il programma finisce so
 
 Gli esempi si scaricano a parte dal sito dell'autore e si scompattano nella cartella degli esempi, che si può creare da dentro l'applicazione. Il pacchetto degli esempi è il file più pesante dell'intero corredo, ed è uno dei motivi per cui il materiale binario di questo progetto va spostato sulla macchina di destinazione invece di restare sul disco di sviluppo.
 
-Wine a 32 bit è **necessario** per Akabak, non opzionale, e questo rovescia quanto il documento sorgente affermava. L'eseguibile è PE32 i386 e il prefix funzionante è `win32`, quindi il pacchetto `wine32` e l'architettura `i386` sul sistema servono, e senza di essi il programma non parte. Non serve invece alcuna dipendenza installata con winetricks.
+Wine a 32 bit è *necessario* per Akabak, non opzionale, e questo rovescia quanto il documento sorgente affermava. L'eseguibile è PE32 i386 e il prefix funzionante è `win32`, quindi il pacchetto `wine32` e l'architettura `i386` sul sistema servono, e senza di essi il programma non parte. Non serve invece alcuna dipendenza installata con winetricks.
 
 ## VACS
 
 VACS è lo strumento di visualizzazione e analisi dei dati che l'autore di Akabak distribuisce insieme al simulatore, e la student license concessa copre entrambi con un solo Release Code. La versione dichiarata dall'autore è la 2.1.3 build 33, coerente con i nomi degli installer conservati. È distribuito in due varianti, a 32 e a 64 bit, e sulla macchina è disponibile in entrambe.
 
-La variante da installare è quella a **32 bit**, nello stesso prefix di Akabak, perché i due programmi si usano in sequenza e perché così è la configurazione che funziona sulla macchina. Lo conferma il lanciatore sulla scrivania della macchina, che invoca `VACS_32.exe` in `C:\Program Files\RDTeam\VACS2`, e il formato dell'eseguibile, che è PE32 i386. La variante a 64 bit resta come riserva non usata.
+La variante da installare è quella a *32 bit*, nello stesso prefix di Akabak, perché i due programmi si usano in sequenza e perché così è la configurazione che funziona sulla macchina. Lo conferma il lanciatore sulla scrivania della macchina, che invoca `VACS_32.exe` in `C:\Program Files\RDTeam\VACS2`, e il formato dell'eseguibile, che è PE32 i386. La variante a 64 bit resta come riserva non usata.
 
 Va registrato un precedente, ed è una lacuna che si è chiusa. Al primo impianto, nell'agosto 2025, Akabak partì e VACS no, e l'ipotesi formulata sul momento fu che dipendesse dall'aver usato la variante a 64 bit invece di quella a 32. La corrispondenza non registrava quale intervento avesse risolto, e questa pagina lo dichiarava come non sapibile senza ispezionare la macchina.
 
-L'ispezione del 2026-09-07 dà la risposta: sulla macchina è installata la variante a **32 bit**, e il lanciatore invoca `VACS_32.exe`. **L'ipotesi formulata allora era corretta**, e il problema fu risolto usando la build a 32 bit.
+L'ispezione del 2026-09-07 dà la risposta: sulla macchina è installata la variante a *32 bit*, e il lanciatore invoca `VACS_32.exe`. *L'ipotesi formulata allora era corretta*, e il problema fu risolto usando la build a 32 bit.
 
 ## Il limite delle pipeline COM fra Akabak e VACS
 

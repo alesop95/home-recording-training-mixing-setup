@@ -12,13 +12,13 @@
 
 ## Premessa: perché una installazione e non un aggiornamento
 
-La macchina è su Ubuntu Studio 25.04, una versione intermedia fuori supporto. La premessa originaria di questa procedura diceva anche che la LTS successiva non fosse raggiungibile con un salto singolo, e **quella parte è stata smentita** dalla fase 0: `do-release-upgrade` propone direttamente la 26.04.1 LTS. Il quadro reale è in [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md).
+La macchina è su Ubuntu Studio 25.04, una versione intermedia fuori supporto. La premessa originaria di questa procedura diceva anche che la LTS successiva non fosse raggiungibile con un salto singolo, e *quella parte è stata smentita* dalla fase 0: `do-release-upgrade` propone direttamente la 26.04.1 LTS. Il quadro reale è in [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md).
 
 Dei quattro motivi per cui questa strada era stata preferita all'aggiornamento in posto, registrati come ADR-006, il primo è caduto con quella smentita: non ci sono due aggiornamenti in cascata attraverso archivi storici da evitare, perché l'alternativa è un solo `do-release-upgrade` dopo aver applicato i 134 pacchetti pendenti. I tre restanti tengono, ed è ADR-011 a registrare la revisione. Il motivo dominante diventa quindi l'ambiente pulito, che la fotografia ha mostrato essere necessario in modo concreto: due repository WineHQ attivi per due rilasci diversi di Ubuntu, `wine-stable 3.0.1` del 2018 accanto a `wine 9.0`, l'architettura `i386` dichiarata, una sorgente `file:/cdrom/` residua e un prefix unico condiviso fra programmi. Restano validi anche il fatto che la licenza di Akabak non sia a rischio e che la 26.04 porti su una base supportata per cinque anni.
 
 Si aggiunge un motivo che prima non c'era, perché richiedeva il dato: `/home` contiene 3,7 GB su 369 disponibili, quindi il costo del salvataggio è trascurabile e il rischio dell'operazione più basso di quanto si potesse stimare.
 
-Poiché una delle quattro gambe era venuta meno, la decisione andava riconfermata dall'utente su questa base e non data per acquisita. **È stata riconfermata il 2026-09-07**, sui tre motivi che restano e con l'ambiente pulito come dominante, e la riconferma è registrata come ADR-013, che chiude PA-006.
+Poiché una delle quattro gambe era venuta meno, la decisione andava riconfermata dall'utente su questa base e non data per acquisita. *È stata riconfermata il 2026-09-07*, sui tre motivi che restano e con l'ambiente pulito come dominante, e la riconferma è registrata come ADR-013, che chiude PA-006.
 
 Il fatto che rende l'operazione a basso rischio è il partizionamento scelto all'installazione originaria, con `/home` su una partizione separata. È la decisione che oggi paga il dividendo più alto, e va trattata con rispetto: l'unico modo di rovinare questa procedura è formattare `/home` per distrazione nella fase 4.
 
@@ -34,7 +34,7 @@ Non si dà per verificato ciò che non si è letto. Ogni fase ha un controllo di
 
 ## Fase 0: fotografia completa della macchina attuale
 
-> **Eseguita il 2026-09-07** nella sua parte non privilegiata. L'esito, con i dati reali e le tre ipotesi diagnostiche smentite, è in [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md). Restano da fare le tre voci che richiedono `sudo` o l'interfaccia grafica, elencate in fondo a quel documento.
+> *Eseguita il 2026-09-07* nella sua parte non privilegiata. L'esito, con i dati reali e le tre ipotesi diagnostiche smentite, è in [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md). Restano da fare le tre voci che richiedono `sudo` o l'interfaccia grafica, elencate in fondo a quel documento.
 
 Obiettivo: registrare lo stato di ciò che esiste, per tre ragioni distinte. Confermare la diagnosi del blocco di aggiornamento. Raccogliere le informazioni che dopo la reinstallazione servono a ricostruire l'ambiente identico. E poter dimostrare, a lavoro finito, che cosa è cambiato e che cosa no.
 
@@ -53,7 +53,7 @@ dpkg --print-foreign-architectures
 do-release-upgrade -c
 ```
 
-Esito reale, misurato il 2026-09-07: la 25.04 con nome in codice `plucky`, confermata; la direttiva `Prompt=normal` e **non** `lts`; sorgenti che puntano a `it.archive.ubuntu.com` sulle suite `plucky` e ancora vive, con risposta HTTP 200; l'architettura `i386` presente, confermata; e l'ultimo comando che risponde *New release '26.04.1 LTS' available*, cioè offre il salto diretto. Il confronto riga per riga fra questo esito e quello che era stato previsto è nella tabella di apertura di [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md).
+Esito reale, misurato il 2026-09-07: la 25.04 con nome in codice `plucky`, confermata; la direttiva `Prompt=normal` e *non* `lts`; sorgenti che puntano a `it.archive.ubuntu.com` sulle suite `plucky` e ancora vive, con risposta HTTP 200; l'architettura `i386` presente, confermata; e l'ultimo comando che risponde *New release '26.04.1 LTS' available*, cioè offre il salto diretto. Il confronto riga per riga fra questo esito e quello che era stato previsto è nella tabella di apertura di [fotografia-macchina-2026-09-07.md](fotografia-macchina-2026-09-07.md).
 
 Su una macchina diversa, o su questa dopo un tempo lungo, l'esito può cambiare: la regola resta leggere i messaggi reali e non assumerli, che è precisamente la lezione di questa fase.
 
@@ -78,7 +78,7 @@ sudo smartctl -a /dev/nvme0n1
 
 L'SSD era dato al 91 per cento di vita residua da una scansione fatta su Windows nel periodo dell'installazione originaria. Vale rileggerlo ora, prima di scriverci sopra un sistema nuovo: se il valore è crollato, la decisione da prendere non è più fra installazione e aggiornamento ma fra installazione e sostituzione del disco.
 
-La verifica del 2026-09-07 ha accertato che `smartmontools` è **già installato**, alla versione `smartctl 7.4`, quindi l'avvertenza precedente su una possibile installazione da rete non serve. Ha accertato anche che non esiste una via non privilegiata per leggere i dati SMART, perché `/dev/nvme0` è `crw------- root root` e l'utente non appartiene al gruppo `disk`. Tre dati si ricavano comunque senza privilegi, e sono il modello reale del disco, il firmware e la temperatura del controller.
+La verifica del 2026-09-07 ha accertato che `smartmontools` è *già installato*, alla versione `smartctl 7.4`, quindi l'avvertenza precedente su una possibile installazione da rete non serve. Ha accertato anche che non esiste una via non privilegiata per leggere i dati SMART, perché `/dev/nvme0` è `crw------- root root` e l'utente non appartiene al gruppo `disk`. Tre dati si ricavano comunque senza privilegi, e sono il modello reale del disco, il firmware e la temperatura del controller.
 
 ```bash
 cat /sys/class/nvme/nvme0/model
@@ -209,7 +209,7 @@ Controllo di uscita della fase 1: la copia esiste, la sua dimensione è coerente
 
 ### 2.1 Scaricare l'immagine
 
-La regola di questa fase è non dedurre il nome dell'immagine dal calendario dei rilasci ma prenderlo dalla fonte, e la sua ragione si è vista subito: la verifica del 2026-09-08 sull'archivio ufficiale ha mostrato che nella cartella del rilascio convivono **due** immagini, la 26.04 iniziale e la **26.04.1**, cioè il primo point release. È quest'ultima quella da prendere, perché incorpora le correzioni accumulate dopo il rilascio, fra cui quelle dell'installatore e del kernel, ed è anche la versione che `do-release-upgrade` offriva sulla macchina.
+La regola di questa fase è non dedurre il nome dell'immagine dal calendario dei rilasci ma prenderlo dalla fonte, e la sua ragione si è vista subito: la verifica del 2026-09-08 sull'archivio ufficiale ha mostrato che nella cartella del rilascio convivono *due* immagini, la 26.04 iniziale e la *26.04.1*, cioè il primo point release. È quest'ultima quella da prendere, perché incorpora le correzioni accumulate dopo il rilascio, fra cui quelle dell'installatore e del kernel, ed è anche la versione che `do-release-upgrade` offriva sulla macchina.
 
 Il nome esatto è `ubuntustudio-26.04.1-desktop-amd64.iso`, pesa 6,6 GB, e sta sotto `https://cdimage.ubuntu.com/ubuntustudio/releases/26.04/release/`. Nella stessa cartella stanno il file delle somme di controllo e la sua firma, che si scaricano insieme all'immagine e non dopo, perché servono a decidere se l'immagine è buona prima di scriverla.
 
@@ -273,17 +273,17 @@ Le impostazioni da usare, con la ragione di ciascuna invece del solo elenco.
 
 Il dispositivo è la chiavetta, e va controllato due volte perché Rufus la cancella per intero. La selezione di avvio è disco o immagine ISO, puntata al file verificato.
 
-La scelta che conta davvero è la modalità di scrittura, e va detto **dove** si trova, perché non è dove la si cerca: non è un campo della finestra principale ma una finestra di dialogo che compare **dopo** aver premuto Avvia, quando Rufus riconosce che l'immagine è di tipo ibrido e offre modalità immagine ISO o modalità immagine DD. Cercarla fra le opzioni prima di avviare porta alla conclusione sbagliata che manchi qualcosa da configurare. **Va scelta DD.**
+La scelta che conta davvero è la modalità di scrittura, e va detto *dove* si trova, perché non è dove la si cerca: non è un campo della finestra principale ma una finestra di dialogo che compare *dopo* aver premuto Avvia, quando Rufus riconosce che l'immagine è di tipo ibrido e offre modalità immagine ISO o modalità immagine DD. Cercarla fra le opzioni prima di avviare porta alla conclusione sbagliata che manchi qualcosa da configurare. *Va scelta DD.*
 
-Che cosa distingue le due modalità. In modalità immagine ISO lo strumento crea sulla chiavetta una tabella delle partizioni, vi formatta un filesystem, estrae i file contenuti nell'immagine e li copia dentro, e installa un caricatore di avvio: la chiavetta è una **ricostruzione** del contenuto dell'immagine, dentro una struttura che lo strumento ha costruito. In modalità immagine DD l'immagine viene scritta sul dispositivo a partire dal settore zero, un byte dopo l'altro, senza essere interpretata: non si crea e non si formatta nulla, si sovrascrive tutto, tabella delle partizioni compresa, e la chiavetta diventa un **clone esatto** del file. Il nome viene dal comando Unix `dd`, che copia blocchi grezzi senza sapere che cosa contengano.
+Che cosa distingue le due modalità. In modalità immagine ISO lo strumento crea sulla chiavetta una tabella delle partizioni, vi formatta un filesystem, estrae i file contenuti nell'immagine e li copia dentro, e installa un caricatore di avvio: la chiavetta è una *ricostruzione* del contenuto dell'immagine, dentro una struttura che lo strumento ha costruito. In modalità immagine DD l'immagine viene scritta sul dispositivo a partire dal settore zero, un byte dopo l'altro, senza essere interpretata: non si crea e non si formatta nulla, si sovrascrive tutto, tabella delle partizioni compresa, e la chiavetta diventa un *clone esatto* del file. Il nome viene dal comando Unix `dd`, che copia blocchi grezzi senza sapere che cosa contengano.
 
-Le ragioni per cui in questa procedura si sceglie DD sono due, ed entrambe discendono dall'esattezza della copia. La prima è che la chiavetta risulta **verificabile a posteriori**, perché il suo contenuto coincide byte per byte con un file di cui si è già verificata l'impronta firmata; una chiavetta scritta in modalità ISO non è confrontabile con nulla, perché il suo contenuto è una struttura nuova che nessuna impronta descrive. La seconda è che l'avvio non dipende da un caricatore che lo strumento costruisce, ma è quello che l'immagine porta con sé, collaudato da chi l'ha pubblicata.
+Le ragioni per cui in questa procedura si sceglie DD sono due, ed entrambe discendono dall'esattezza della copia. La prima è che la chiavetta risulta *verificabile a posteriori*, perché il suo contenuto coincide byte per byte con un file di cui si è già verificata l'impronta firmata; una chiavetta scritta in modalità ISO non è confrontabile con nulla, perché il suo contenuto è una struttura nuova che nessuna impronta descrive. La seconda è che l'avvio non dipende da un caricatore che lo strumento costruisce, ma è quello che l'immagine porta con sé, collaudato da chi l'ha pubblicata.
 
 Il rovescio va detto, perché è ciò che lo strumento intende quando suggerisce l'altra modalità con la frase sull'avere pieno accesso all'unità dopo la scrittura: in DD la chiavetta è un installatore e nient'altro, non vi si possono aggiungere file e lo spazio residuo non è utilizzabile. Per riutilizzare il supporto in futuro occorre azzerarne la tabella delle partizioni, con `diskpart` e la sua operazione `clean` su Windows, e non basta una formattazione dall'interfaccia grafica.
 
-Sul campo del sistema di file, che prima di premere Avvia mostra `Large FAT32`, va detto che si lascia così: è il valore che lo strumento propone presumendo la modalità ISO, e in DD diventa irrilevante perché nessun filesystem viene costruito. Vale però chiarire che cosa quella variante fa, perché il nome inganna: `Large FAT32` rimuove il limite di dimensione del **volume**, consentendo FAT32 su supporti oltre i 32 GB, e **non** rimuove il limite di 4 GiB meno un byte per singolo file, che è un vincolo diverso e appartiene al formato.
+Sul campo del sistema di file, che prima di premere Avvia mostra `Large FAT32`, va detto che si lascia così: è il valore che lo strumento propone presumendo la modalità ISO, e in DD diventa irrilevante perché nessun filesystem viene costruito. Vale però chiarire che cosa quella variante fa, perché il nome inganna: `Large FAT32` rimuove il limite di dimensione del *volume*, consentendo FAT32 su supporti oltre i 32 GB, e *non* rimuove il limite di 4 GiB meno un byte per singolo file, che è un vincolo diverso e appartiene al formato.
 
-Su quest'ultimo punto va registrata una **inferenza ritirata**, perché era stata scritta qui come motivo principale della scelta di DD ed era falsa. Avevo affermato che dentro una immagine live di questa dimensione il filesystem compresso del sistema superasse i 4 GiB, rendendo la modalità ISO impraticabile. La misura sul contenuto dell'immagine dice il contrario: il file più grande è `casper/minimal.squashfs` con 4.112.433.152 byte, cioè 3,83 GiB, sotto il limite di 4.294.967.295. La modalità ISO avrebbe quindi funzionato, e il suggerimento dello strumento era corretto. La scelta di DD resta valida per le due ragioni dette sopra, che non dipendono da questa, ma il motivo sbagliato è stato rimosso invece di essere lasciato a reggere una conclusione giusta. Il margine è del quattro per cento, ed è la ragione per cui l'ipotesi era plausibile: su un'altra derivata, o su una versione futura, quel file può superare la soglia, e in quel caso l'argomento tornerebbe valido. Va misurato, non assunto, e la misura costa un comando.
+Su quest'ultimo punto va registrata una *inferenza ritirata*, perché era stata scritta qui come motivo principale della scelta di DD ed era falsa. Avevo affermato che dentro una immagine live di questa dimensione il filesystem compresso del sistema superasse i 4 GiB, rendendo la modalità ISO impraticabile. La misura sul contenuto dell'immagine dice il contrario: il file più grande è `casper/minimal.squashfs` con 4.112.433.152 byte, cioè 3,83 GiB, sotto il limite di 4.294.967.295. La modalità ISO avrebbe quindi funzionato, e il suggerimento dello strumento era corretto. La scelta di DD resta valida per le due ragioni dette sopra, che non dipendono da questa, ma il motivo sbagliato è stato rimosso invece di essere lasciato a reggere una conclusione giusta. Il margine è del quattro per cento, ed è la ragione per cui l'ipotesi era plausibile: su un'altra derivata, o su una versione futura, quel file può superare la soglia, e in quel caso l'argomento tornerebbe valido. Va misurato, non assunto, e la misura costa un comando.
 
 ```powershell
 & "C:\Program Files\7-Zip\7z.exe" l "C:\Users\Utente\Desktop\_iso-ubuntu-studio\ubuntustudio-26.04.1-desktop-amd64.iso"
@@ -291,25 +291,25 @@ Su quest'ultimo punto va registrata una **inferenza ritirata**, perché era stat
 
 La configurazione corretta, verificata su Rufus 4.15 il 2026-09-08, ha questo aspetto: dispositivo la chiavetta e non un altro disco USB collegato, tipo boot sistema l'immagine con la spunta verde di riconoscimento, dimensione partizione persistente a zero perché si sta preparando un installatore e non un sistema live con memoria, schema GPT, sistema destinazione UEFI senza CSM. Con questi valori lo stato in fondo alla finestra dice pronto, e l'unica cosa che resta è premere Avvia.
 
-Una avvertenza sul dispositivo, che è il punto in cui un errore costa caro, va data insieme alla sua mitigazione, altrimenti descrive un rischio più grande di quello reale. La casella `Elenco unità disco USB` deve restare **deselezionata**, ed è il presidio che tiene i dischi rigidi e gli SSD esterni fuori dall'elenco dei dispositivi, lasciandovi solo le unità rimovibili: con quella casella spenta un disco di lavoro collegato non è nemmeno selezionabile, e la barra di stato lo conferma dichiarando quanti dispositivi sono stati rilevati. Se per qualche ragione la si attiva, allora sì, il disco esterno compare accanto alla chiavetta e Rufus cancella per intero ciò che gli si indica: in quel caso la distinzione si fa sulla capacità dichiarata accanto al nome, non sulla posizione nell'elenco, che cambia. La conclusione operativa è che quella casella non si attiva senza un motivo preciso.
+Una avvertenza sul dispositivo, che è il punto in cui un errore costa caro, va data insieme alla sua mitigazione, altrimenti descrive un rischio più grande di quello reale. La casella `Elenco unità disco USB` deve restare *deselezionata*, ed è il presidio che tiene i dischi rigidi e gli SSD esterni fuori dall'elenco dei dispositivi, lasciandovi solo le unità rimovibili: con quella casella spenta un disco di lavoro collegato non è nemmeno selezionabile, e la barra di stato lo conferma dichiarando quanti dispositivi sono stati rilevati. Se per qualche ragione la si attiva, allora sì, il disco esterno compare accanto alla chiavetta e Rufus cancella per intero ciò che gli si indica: in quel caso la distinzione si fa sulla capacità dichiarata accanto al nome, non sulla posizione nell'elenco, che cambia. La conclusione operativa è che quella casella non si attiva senza un motivo preciso.
 
 Le tre opzioni avanzate di formattazione, cioè formattazione rapida, creazione dell'etichetta estesa con i file icona, e test dei blocchi errati, si lasciano ai valori predefiniti. Le prime due appartengono alla modalità ISO, dove un filesystem viene costruito, quindi in modalità DD non hanno oggetto. Il test dei blocchi errati va lasciato spento: su un supporto nuovo aggiunge una lettura completa dell'intera capacità senza dire nulla che l'esito della scrittura non dica già, e su un supporto sospetto la domanda a cui rispondere non è se la chiavetta abbia blocchi difettosi ma se valga la pena usarla.
 
 Lo schema di partizione è GPT e il sistema di destinazione è UEFI senza compatibilità CSM, perché l'installazione esistente su questa macchina è UEFI e la sua partizione EFI va riusata, come stabilisce la fase 3.
 
-Una avvertenza sul dopo, che è il punto in cui si rovina una chiavetta appena fatta. Terminata la scrittura in modalità DD, Windows vede sulla chiavetta uno spazio non allocato oltre le partizioni dell'immagine e propone di formattarlo, a volte con un avviso che il disco va inizializzato. **Va rifiutato.** Quell'operazione riscrive la tabella delle partizioni e rende il supporto non avviabile, e il fatto che l'avviso sembri una richiesta di manutenzione ordinaria è esattamente ciò che la rende insidiosa.
+Una avvertenza sul dopo, che è il punto in cui si rovina una chiavetta appena fatta. Terminata la scrittura in modalità DD, Windows vede sulla chiavetta uno spazio non allocato oltre le partizioni dell'immagine e propone di formattarlo, a volte con un avviso che il disco va inizializzato. *Va rifiutato.* Quell'operazione riscrive la tabella delle partizioni e rende il supporto non avviabile, e il fatto che l'avviso sembri una richiesta di manutenzione ordinaria è esattamente ciò che la rende insidiosa.
 
 ### 2.4 Verificare la chiavetta scritta
 
 La verifica giusta è quella che il supporto fa su se stesso, ed è nel menu di avvio della chiavetta alla voce `Check disc for defects`. Richiede un paio di minuti, controlla le somme che l'immagine porta al proprio interno, e risponde esattamente alla domanda utile, cioè se il supporto rilegge integro ciò che vi è stato scritto. Va fatta al primo avvio, prima di entrare nell'installatore.
 
-Questa sottofase, nella sua prima stesura, prescriveva invece di confrontare l'impronta dei primi byte del dispositivo grezzo con quella dell'immagine, sul presupposto che una chiavetta scritta in modalità DD debba restare identica al file. **Quel presupposto è falso su Windows**, e la sua smentita è documentata in MS-069: il confronto è stato eseguito e ha dato impronte diverse su una chiavetta perfettamente valida.
+Questa sottofase, nella sua prima stesura, prescriveva invece di confrontare l'impronta dei primi byte del dispositivo grezzo con quella dell'immagine, sul presupposto che una chiavetta scritta in modalità DD debba restare identica al file. *Quel presupposto è falso su Windows*, e la sua smentita è documentata in MS-069: il confronto è stato eseguito e ha dato impronte diverse su una chiavetta perfettamente valida.
 
 Le ragioni per cui è falso sono tre e sono tutte legittime scritture del sistema operativo, non guasti. Una immagine ibrida porta una tabella GPT dimensionata sull'immagine, con la copia di sicurezza alla propria fine; scritta su un supporto molto più grande quella copia si trova a metà disco invece che in fondo, e il sistema la ripara spostandola e riscrivendo l'intestazione primaria, il campo che punta alla copia e il codice di controllo. La zona da cui la copia è stata rimossa cambia a sua volta. E le partizioni scrivibili che il sistema monta con una lettera propria, fra cui la partizione di sistema EFI che è formattata FAT, ricevono le cartelle di servizio che Windows crea al primo accesso.
 
 Ne segue la regola, che vale oltre questo caso: un confronto byte per byte fra una immagine e il supporto su cui è stata scritta ha senso soltanto su un sistema che non monta automaticamente i volumi e non ripara le tabelle delle partizioni. Su Windows la differenza è la norma e non l'eccezione, quindi un confronto integrale non è una verifica ma un generatore di falsi allarmi.
 
-Lo strumento `tools/verify-usb-dd.ps1` resta nel progetto ma **non appartiene più a questa procedura**: il suo uso legittimo è confrontare un'immagine con una copia grezza che nessun sistema ha montato, per esempio un archivio di un supporto. Il suo docstring lo dichiara.
+Lo strumento `tools/verify-usb-dd.ps1` resta nel progetto ma *non appartiene più a questa procedura*: il suo uso legittimo è confrontare un'immagine con una copia grezza che nessun sistema ha montato, per esempio un archivio di un supporto. Il suo docstring lo dichiara.
 
 Riferimento dell'esecuzione del 2026-09-08, utile per riconoscere una scrittura riuscita senza verifiche aggiuntive: la scrittura ha richiesto otto minuti e sette secondi, e a fine scrittura la chiavetta presenta tre partizioni in tabella GPT, cioè il volume principale dell'immagine di circa 6792 MB, una partizione di sistema EFI di 5 MB e una partizione ausiliaria di 0,3 MB, le ultime due delle quali Windows monta con lettere proprie. Sono le partizioni dell'immagine ibrida e non una struttura costruita dallo strumento di scrittura, che in modalità immagine ISO ne avrebbe creata una sola: è quindi la conferma leggibile a occhio che la modalità DD è stata effettivamente usata.
 
@@ -366,9 +366,9 @@ Le quattro partizioni vanno configurate così.
 | `nvme0n1p3`, swap | | nessuno | sì | si riusa così come è |
 | `nvme0n1p4`, ext4 | **346 GB**, 1 per cento usato | `/home` | **no** | qui vivono progetti, materiali trasferiti e prefix Wine |
 
-Il punto di attenzione assoluto è l'ultima riga, e la trappola concreta va nominata perché non è la casella in sé: nell'installatore la casella di formattazione **si attiva da sola** quando si seleziona un filesystem nel menu della riga. Su `/home` il filesystem non si tocca affatto, si imposta soltanto il punto di montaggio, ed è il secondo dei tre momenti in cui questa fase si può sbagliare.
+Il punto di attenzione assoluto è l'ultima riga, e la trappola concreta va nominata perché non è la casella in sé: nell'installatore la casella di formattazione *si attiva da sola* quando si seleziona un filesystem nel menu della riga. Su `/home` il filesystem non si tocca affatto, si imposta soltanto il punto di montaggio, ed è il secondo dei tre momenti in cui questa fase si può sbagliare.
 
-Il terzo momento è la schermata di riepilogo che l'installatore mostra prima di scrivere, ed è l'unico controllo che conta davvero, perché elenca le operazioni che verranno eseguite e perché fino a quel pulsante nulla è stato scritto sul disco. Deve comparire una formattazione **soltanto** per `nvme0n1p2`. Se la parola compare accanto a `nvme0n1p4` o a `nvme0n1p1`, si torna indietro.
+Il terzo momento è la schermata di riepilogo che l'installatore mostra prima di scrivere, ed è l'unico controllo che conta davvero, perché elenca le operazioni che verranno eseguite e perché fino a quel pulsante nulla è stato scritto sul disco. Deve comparire una formattazione *soltanto* per `nvme0n1p2`. Se la parola compare accanto a `nvme0n1p4` o a `nvme0n1p1`, si torna indietro.
 
 Se l'installatore lo permette, conviene catturare uno screenshot della schermata di riepilogo prima di confermare: è la prova di che cosa è stato chiesto, e in caso di esito inatteso è l'unico documento che dice se l'errore era nella richiesta o nell'esecuzione.
 
@@ -439,7 +439,7 @@ systemctl --user status pipewire pipewire-pulse wireplumber
 groups
 ```
 
-**Attenzione: il controllo sul nome del kernel è sbagliato e darebbe un falso negativo.** Lo diceva una versione precedente di questa fase, e la fotografia del 2026-09-07 lo ha smentito. Su Ubuntu Studio 25.04 non è installato alcun `linux-image-lowlatency`: il kernel è generico, e la configurazione a bassa latenza è ottenuta tramite parametri di avvio. Chi cercasse un kernel chiamato lowlatency concluderebbe che manchi, e installerebbe un pacchetto che non serve.
+*Attenzione: il controllo sul nome del kernel è sbagliato e darebbe un falso negativo.* Lo diceva una versione precedente di questa fase, e la fotografia del 2026-09-07 lo ha smentito. Su Ubuntu Studio 25.04 non è installato alcun `linux-image-lowlatency`: il kernel è generico, e la configurazione a bassa latenza è ottenuta tramite parametri di avvio. Chi cercasse un kernel chiamato lowlatency concluderebbe che manchi, e installerebbe un pacchetto che non serve.
 
 Il controllo corretto è sulla riga di comando del kernel e sui limiti di priorità in tempo reale.
 
@@ -450,19 +450,23 @@ dpkg -l | grep -i lowlatency
 systemctl --user is-active pipewire pipewire-pulse wireplumber
 ```
 
-I due parametri che contano in `/proc/cmdline` sono `preempt=full`, che abilita la prelazione completa del kernel, e `threadirqs`, che sposta la gestione degli interrupt in thread schedulabili: sono le proprietà per cui esisteva un kernel separato. I limiti attesi sono `rtprio 95` e `memlock unlimited` per i gruppi `audio` e `pipewire`, e li configura il pacchetto `ubuntustudio-lowlatency-settings`, che è un pacchetto di impostazioni e non un kernel. I tre servizi devono risultare tutti attivi.
+I due parametri che contano in `/proc/cmdline` sono `preempt=full`, che abilita la prelazione completa del kernel, e `threadirqs`, che sposta la gestione degli interrupt in thread schedulabili: sono le proprietà per cui esisteva un kernel separato. Sulla 26.04 osservata il 2026-09-09 se ne aggiunge un terzo, `rcu_nocbs=all`, e soprattutto va corretta la loro provenienza: non stanno in `/etc/default/grub`, che contiene soltanto `quiet splash`, ma in `/etc/default/grub.d/ubuntustudio.cfg`, un file drop-in che il sistema installa da sé ed estende la variabile invece di sostituirla. Aggiungerli a mano al file principale, come una versione precedente di questa fase prescriveva, li duplicherebbe sulla riga di comando del kernel. Si verifica e basta; solo se mancassero si interviene, e in quel caso nel drop-in. I limiti attesi sono `rtprio 95` e `memlock unlimited` per i gruppi `audio` e `pipewire`, e li configura il pacchetto `ubuntustudio-lowlatency-settings`, che è un pacchetto di impostazioni e non un kernel. I tre servizi devono risultare tutti attivi.
 
 Se sulla 26.04 questo schema fosse cambiato, la fonte è la documentazione ufficiale di Ubuntu Studio per quel rilascio, non l'assunzione: il confronto va fatto contro i valori registrati nella fotografia del 2026-09-07, che sono lo stato noto e funzionante di partenza.
 
-Il comando `groups` deve mostrare l'appartenenza al gruppo `audio`, che è ciò che abilita le priorità in tempo reale. Se manca, si aggiunge e si riavvia la sessione.
+Il comando `groups` deve mostrare l'appartenenza ai gruppi `audio` e `pipewire`, che è ciò che abilita le priorità in tempo reale. Il 2026-09-09 mancavano entrambi su una installazione appena fatta, ed è un difetto che l'installatore introduce di serie: si veda MS-074.
+
+Su questo controllo va segnalata una trappola, perché la verifica ingenua produce un falso positivo. Leggere i valori dentro `/etc/security/limits.d/` non dimostra nulla, dato che quei valori sono giusti anche quando non arrivano a nessuno: concedono `rtprio 95` e `memlock unlimited` ai due gruppi, e se l'utente non vi appartiene i limiti restano scritti e non in vigore. La prova sta nel confronto con ciò che la sessione riporta davvero, cioè `ulimit -r -l`, che in quel caso risponde `0` e `8192`. È la stessa differenza fra una regola scritta e una regola applicata che ha già prodotto il falso negativo sul nome del kernel poche righe sopra.
+
+Se i gruppi mancano si aggiungono, tenendo presente che l'appartenenza si applica al login e non alla sessione in corso: la verifica va quindi fatta in una sessione di login nuova, oppure dopo un riaccesso.
 
 ```bash
-sudo usermod -aG audio alesop95
+sudo usermod -aG audio,pipewire alesop95 && id -nG alesop95
 ```
 
 Controllo di uscita: la Scarlett 2i2 compare in ingresso e in uscita, e una riproduzione di prova si sente.
 
-Va notato che al 2026-09-07 la Scarlett **non era collegata**: `lsusb` non riportava alcun dispositivo Focusrite e le sole schede viste erano l'audio integrato `ALC887-VD` con le sue uscite HDMI. Questo controllo di uscita non è quindi eseguibile finché l'interfaccia non viene collegata, e non è un difetto del sistema.
+Va notato che al 2026-09-07 la Scarlett *non era collegata*: `lsusb` non riportava alcun dispositivo Focusrite e le sole schede viste erano l'audio integrato `ALC887-VD` con le sue uscite HDMI. Questo controllo di uscita non è quindi eseguibile finché l'interfaccia non viene collegata, e non è un difetto del sistema.
 
 ## Fase 7: ricostruzione dell'ambiente Wine
 
@@ -470,11 +474,11 @@ Obiettivo: un ambiente pulito, con un prefix per programma, senza l'architettura
 
 La procedura completa, con il razionale di ogni passo, sta in `docs/10-ambiente/wine-configurazione.md`. Qui la sequenza nell'ordine di questa installazione, con le due differenze deliberate rispetto al passato.
 
-**Attenzione: questa fase è stata corretta il 2026-09-07 e la versione precedente era sbagliata.** Prescriveva quattro prefix a 64 bit con `dotnet48` per tutti, sulla base dell'affermazione del documento sorgente secondo cui Akabak 3 sarebbe a 64 bit. L'ispezione del prefix funzionante sulla macchina l'ha smentita: si veda ADR-016.
+*Attenzione: questa fase è stata corretta il 2026-09-07 e la versione precedente era sbagliata.* Prescriveva quattro prefix a 64 bit con `dotnet48` per tutti, sulla base dell'affermazione del documento sorgente secondo cui Akabak 3 sarebbe a 64 bit. L'ispezione del prefix funzionante sulla macchina l'ha smentita: si veda ADR-016.
 
-I fatti misurati. Il prefix in uso è `~/.wine` e il suo registro dichiara `#arch=win32`, cioè è a **32 bit**. `AKABAK.exe` installato è `PE32 executable, Intel 80386`, cioè **a 32 bit**, come `VACS_32.exe`. Nel prefix non c'è alcun `winetricks.log`, non c'è `Microsoft.NET/Framework/v4` e non ci sono font Microsoft di base: Akabak e VACS funzionano **senza nessuna delle dipendenze che il documento sorgente prescriveva**.
+I fatti misurati. Il prefix in uso è `~/.wine` e il suo registro dichiara `#arch=win32`, cioè è a *32 bit*. `AKABAK.exe` installato è `PE32 executable, Intel 80386`, cioè *a 32 bit*, come `VACS_32.exe`. Nel prefix non c'è alcun `winetricks.log`, non c'è `Microsoft.NET/Framework/v4` e non ci sono font Microsoft di base: Akabak e VACS funzionano *senza nessuna delle dipendenze che il documento sorgente prescriveva*.
 
-Ne segue la prima differenza rispetto alla versione precedente di questa fase: **l'architettura `i386` va dichiarata**, perché è necessaria e non residua. Senza di essa il solo software del progetto che oggi funziona non funzionerebbe.
+Ne segue la prima differenza rispetto alla versione precedente di questa fase: *l'architettura `i386` va dichiarata*, perché è necessaria e non residua. Senza di essa il solo software del progetto che oggi funziona non funzionerebbe.
 
 ```bash
 sudo dpkg --add-architecture i386
@@ -485,7 +489,7 @@ wine --version
 
 La seconda differenza resta valida: si decide una sola provenienza dei pacchetti e non si mescola, perché la fotografia ha trovato due repository WineHQ attivi per due rilasci diversi di Ubuntu.
 
-Poi i prefix, quattro, con **architetture diverse** e non tutte a 64 bit.
+Poi i prefix, quattro, con *architetture diverse* e non tutte a 64 bit.
 
 ```bash
 WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
@@ -494,7 +498,7 @@ WINEARCH=win64 WINEPREFIX=~/wineprefixes/easefocus64 winecfg
 WINEARCH=win64 WINEPREFIX=~/wineprefixes/arta64 winecfg
 ```
 
-Le dipendenze si installano soltanto dove servono, e per Akabak e VACS **non ne servono**: la configurazione funzionante non ne ha nessuna, e aggiungerne sarebbe riprodurre i tentativi del troubleshooting invece della soluzione.
+Le dipendenze si installano soltanto dove servono, e per Akabak e VACS *non ne servono*: la configurazione funzionante non ne ha nessuna, e aggiungerne sarebbe riprodurre i tentativi del troubleshooting invece della soluzione.
 
 ```bash
 WINEPREFIX=~/wineprefixes/vituixcad64 winetricks -q dotnet48 corefonts
@@ -530,7 +534,7 @@ WINEPREFIX=~/wineprefixes/akabak32 wine AKABAK_Pro_v324b126.exe
 WINEPREFIX=~/wineprefixes/akabak32 wine VACS_32_v213b33.exe
 ```
 
-Due correzioni rispetto alla versione precedente di questo passo, entrambe da ADR-016. Il prefix è a **32 bit** e non a 64, perché l'eseguibile installato è PE32 i386. E la variante di VACS è la **32 bit**, non la 64: è quella che il lanciatore sulla scrivania della macchina invoca, cioè `VACS_32.exe` in `C:\Program Files\RDTeam\VACS2`.
+Due correzioni rispetto alla versione precedente di questo passo, entrambe da ADR-016. Il prefix è a *32 bit* e non a 64, perché l'eseguibile installato è PE32 i386. E la variante di VACS è la *32 bit*, non la 64: è quella che il lanciatore sulla scrivania della macchina invoca, cioè `VACS_32.exe` in `C:\Program Files\RDTeam\VACS2`.
 
 Quest'ultimo dato chiude una lacuna che lo storico di Akabak e VACS aveva dichiarato aperta, cioè quale variante fosse installata e come fosse stato risolto il fallimento iniziale di VACS. La risposta è che fu risolto usando la build a 32 bit, che era esattamente l'ipotesi formulata nella corrispondenza del 13 agosto 2025: era corretta.
 
