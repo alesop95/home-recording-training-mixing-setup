@@ -491,6 +491,12 @@ Attenzione al nome del pacchetto, corretto il 2026-09-09 dopo averlo verificato 
 
 La seconda differenza resta valida: si decide una sola provenienza dei pacchetti e non si mescola, perché la fotografia ha trovato due repository WineHQ attivi per due rilasci diversi di Ubuntu.
 
+Un passo che la procedura non conteneva e senza cui la decisione sui 32 bit resta inapplicabile. Su Ubuntu il comando `wine` è un collegamento che porta a uno script, il quale usa il caricatore a 64 bit se `wine64` è eseguibile e ripiega su quello a 32 bit soltanto se manca: con entrambi i rami installati, come questa fase impone, il caricatore a 32 bit non viene mai scelto, e su un prefix `win32` l'avvio fallisce con `is a 32-bit installation, it cannot support 64-bit applications`. Ogni comando rivolto al prefix a 32 bit va quindi dato con `wine32`, a cui `WINEPREFIX` va sempre passato esplicitamente perché altrimenti ne assume uno proprio. La diagnosi è in MS-084.
+
+```bash
+WINEPREFIX=~/wineprefixes/akabak32 wine32 "C:/Program Files/RDTeam/AKABAK/AKABAK.exe"
+```
+
 Poi i prefix, quattro, con *architetture diverse* e non tutte a 64 bit.
 
 ```bash

@@ -110,6 +110,8 @@ Il pacchetto si chiama `wine` e non `wine-stable`: quel nome appartiene ai repos
 WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
 ```
 
+Attenzione al comando e non solo al prefix: con entrambi i rami di Wine installati, il comando `wine` sceglie sempre il caricatore a 64 bit e su un prefix `win32` fallisce con `is a 32-bit installation, it cannot support 64-bit applications`. Per il prefix a 32 bit il comando è `wine32`, sempre con `WINEPREFIX` dichiarato. Vedi MS-084.
+
 Nella scheda delle applicazioni si imposta la versione di Windows su *Windows 10*, che è quella dichiarata dal prefix funzionante.
 
 Akabak e VACS *non* richiedono .NET, font Microsoft o runtime Visual C++: il prefix che funziona non ne ha nessuno, e la lista di dipendenze del documento sorgente descriveva i tentativi del troubleshooting e non ciò che serviva.

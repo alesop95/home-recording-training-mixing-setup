@@ -187,11 +187,11 @@ Questa forma è più radicale dell'impostazione grafica, perché impedisce anche
 
 ### 9 settembre, pomeriggio: l'ambiente Wine, e tre prescrizioni sbagliate su tre
 
-La fase 7 ha prodotto piu' correzioni documentali che comandi, e tutte e tre dello stesso tipo: una prescrizione scritta guardando un ambiente diverso da quello dove sarebbe stata eseguita.
+La fase 7 ha prodotto più correzioni documentali che comandi, e tutte e tre dello stesso tipo: una prescrizione scritta guardando un ambiente diverso da quello dove sarebbe stata eseguita.
 
-La prima e' stata intercettata prima di consegnare i comandi, verificando i nomi dei pacchetti sulla macchina invece di fidarsi della procedura. Il pacchetto prescritto, `wine-stable`, su Ubuntu 26.04 non esiste: `apt-cache policy` risponde `Candidate: (none)`, perche' quel nome appartiene ai repository WineHQ che il sistema precedente aveva attivi. Il pacchetto dell'archivio si chiama `wine`. E' MS-081.
+La prima è stata intercettata prima di consegnare i comandi, verificando i nomi dei pacchetti sulla macchina invece di fidarsi della procedura. Il pacchetto prescritto, `wine-stable`, su Ubuntu 26.04 non esiste: `apt-cache policy` risponde `Candidate: (none)`, perché quel nome appartiene ai repository WineHQ che il sistema precedente aveva attivi. Il pacchetto dell'archivio si chiama `wine`. È MS-081.
 
-Lo stesso controllo ha dato una conferma non cercata dell'ordine imposto da ADR-016: prima di dichiarare l'architettura, `apt-cache policy wine32` risponde `Candidate: (none)` mentre `wine64` risponde con la versione. Non e' un pacchetto mancante, e' l'architettura non ancora abilitata.
+Lo stesso controllo ha dato una conferma non cercata dell'ordine imposto da ADR-016: prima di dichiarare l'architettura, `apt-cache policy wine32` risponde `Candidate: (none)` mentre `wine64` risponde con la versione. Non è un pacchetto mancante, è l'architettura non ancora abilitata.
 
 ```bash
 sudo dpkg --add-architecture i386 && dpkg --print-foreign-architectures
@@ -201,19 +201,27 @@ sudo dpkg --add-architecture i386 && dpkg --print-foreign-architectures
 sudo apt update && apt-cache policy wine32 | head -3
 ```
 
-Il secondo comando non e' cerimoniale: serve a vedere che `wine32` sia passato a una versione candidata prima di installare Wine, perche' se restasse indisponibile i pacchetti a 32 bit non entrerebbero e il difetto si manifesterebbe soltanto piu' tardi, come programma che non parte.
+Il secondo comando non è cerimoniale: serve a vedere che `wine32` sia passato a una versione candidata prima di installare Wine, perché se restasse indisponibile i pacchetti a 32 bit non entrerebbero e il difetto si manifesterebbe soltanto più tardi, come programma che non parte.
 
-La seconda prescrizione sbagliata e' emersa dall'esecuzione, ed e' la piu' grave delle tre. L'installazione con `--install-recommends wine winetricks` non installa `wine32`, che il metapacchetto si limita a *suggerire*, e l'opzione agisce sui raccomandati. Il risultato era un sistema con `i386` dichiarata, Wine installato, `wine --version` che risponde correttamente, e Akabak che non sarebbe partito: esattamente l'esito che ADR-016 doveva prevenire, raggiunto attraverso passi che sembravano tutti riusciti. Il controllo di uscita della fase, `wine --version`, era soddisfatto da un sistema difettoso, ed e' la terza volta in questo setup che un controllo si rivela piu' debole di cio' che deve provare. E' MS-082.
+La seconda prescrizione sbagliata è emersa dall'esecuzione, ed è la più grave delle tre. L'installazione con `--install-recommends wine winetricks` non installa `wine32`, che il metapacchetto si limita a *suggerire*, e l'opzione agisce sui raccomandati. Il risultato era un sistema con `i386` dichiarata, Wine installato, `wine --version` che risponde correttamente, e Akabak che non sarebbe partito: esattamente l'esito che ADR-016 doveva prevenire, raggiunto attraverso passi che sembravano tutti riusciti. Il controllo di uscita della fase, `wine --version`, era soddisfatto da un sistema difettoso, ed è la terza volta in questo setup che un controllo si rivela più debole di ciò che deve provare. È MS-082.
 
 ```bash
 sudo apt install wine32:i386 && dpkg -l wine32:i386 | tail -1
 ```
 
-Il ramo a 32 bit e' costato 263 pacchetti, 250 MB scaricati e 1,1 GB occupati, e il numero spiega perche' il metapacchetto non lo raccomandi: non e' un binario ma un albero di librerie parallelo, dalla `libc` fino a Mesa, GTK e GStreamer.
+Il ramo a 32 bit è costato 263 pacchetti, 250 MB scaricati e 1,1 GB occupati, e il numero spiega perché il metapacchetto non lo raccomandi: non è un binario ma un albero di librerie parallelo, dalla `libc` fino a Mesa, GTK e GStreamer.
 
-La terza prescrizione sbagliata non stava in un documento ma in due file di configurazione del desktop, e sarebbe stata scoperta separatamente. I lanciatori di AKABAK e VACS sulla scrivania invocavano il programma con `wine-stable`, cioe' lo stesso nome inesistente di MS-081: erano rotti e lo sarebbero stati anche senza toccare nulla, con la finestra che non si apre e nessun messaggio utile. Corretti a `wine` in MS-083.
+La terza prescrizione sbagliata era mia, e va raccontata con la sua correzione perché la prima versione di questa pagina la conteneva. Avevo scritto che i due lanciatori della scrivania fossero rotti perché invocavano `wine-stable`, un nome che credevo inesistente su questo sistema, e li avevo corretti a `wine`. Il file `/usr/bin/wine-stable` esiste invece ed è precisamente lo script a cui `/usr/bin/wine` rimanda attraverso il sistema delle alternative: i due nomi sono lo stesso programma, quindi la mia correzione era una non-operazione. L'errore nasce dall'aver trasferito al binario una conclusione verificata sul pacchetto, che sono due oggetti diversi con due strumenti di verifica diversi. Il ritiro è in MS-084.
 
-Nella stessa occasione la scrivania e' stata separata dal magazzino. Il confronto per impronta fra `~/Desktop` e `~/electroacoustics` ha mostrato che 380 dei 647 valori distinti della scrivania non esistono nell'albero curato, e che sono le voci escluse da ADR-010, cioe' LSPCad in due versioni, FineCone, FineMotor e Grenander, piu' tre simulatori di amplificatori per chitarra che appartengono all'home recording. Dalla scrivania non andava quindi spostato nulla dentro il progetto: il difetto era che facesse contemporaneamente da spazio di lavoro e da magazzino da 2,3 GB. Il magazzino e' ora in `~/archivio`, con una pagina che dichiara che cos'e' ciascuna cosa, e sulla scrivania restano i due lanciatori, i progetti Ardour e il collegamento verso l'albero curato.
+Il difetto reale dei lanciatori era un altro e la mia correzione lo lasciava intatto, ed è lo stesso che ha impedito il primo avvio di AKABAK. Lo script a cui `wine` rimanda usa il caricatore a 64 bit se `wine64` è eseguibile, e ripiega su quello a 32 bit soltanto se il primo manca: con entrambi i rami installati, come ADR-016 impone, il caricatore a 32 bit non viene mai scelto, e su un prefix `win32` l'avvio fallisce con il messaggio che dichiara di non poter ospitare applicazioni a 64 bit. La forma corretta è `wine32`, che esegue il binario `ELF 32-bit` e a cui va sempre passato `WINEPREFIX` esplicito, perché altrimenti ne assume uno proprio.
+
+```bash
+WINEPREFIX=~/.wine wine32 "C:/Program Files/RDTeam/AKABAK/AKABAK.exe"
+```
+
+Questa riga è il complemento operativo di ADR-016 e mancava del tutto: dichiarare l'architettura e installare il ramo a 32 bit rende il prefix possibile, ma per usarlo serve il comando giusto, altrimenti la decisione resta corretta e inapplicabile. I due lanciatori sono stati corretti a `wine32` in MS-084.
+
+Nella stessa occasione la scrivania è stata separata dal magazzino. Il confronto per impronta fra `~/Desktop` e `~/electroacoustics` ha mostrato che 380 dei 647 valori distinti della scrivania non esistono nell'albero curato, e che sono le voci escluse da ADR-010, cioè LSPCad in due versioni, FineCone, FineMotor e Grenander, più tre simulatori di amplificatori per chitarra che appartengono all'home recording. Dalla scrivania non andava quindi spostato nulla dentro il progetto: il difetto era che facesse contemporaneamente da spazio di lavoro e da magazzino da 2,3 GB. Il magazzino è ora in `~/archivio`, con una pagina che dichiara che cos'è ciascuna cosa, e sulla scrivania restano i due lanciatori, i progetti Ardour e il collegamento verso l'albero curato.
 
 ## Stato verificato al termine del setup
 
