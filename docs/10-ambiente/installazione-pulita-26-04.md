@@ -100,7 +100,7 @@ cat /etc/security/limits.d/*audio* 2>/dev/null
 uname -r
 ```
 
-Registra quale server audio è effettivamente in uso, quali dispositivi sono visti, se la Scarlett 2i2 è riconosciuta e con quale nome, e quali limiti di priorità in tempo reale sono configurati per il gruppo audio. È la parte della fotografia che serve al progetto gemello di home recording tanto quanto a questo.
+Registra quale server audio è effettivamente in uso, quali dispositivi audio sono visti e con quale nome, e quali limiti di priorità in tempo reale sono configurati per i gruppi `audio` e `pipewire`. È la parte della fotografia che serve al progetto gemello di home recording tanto quanto a questo.
 
 ### 0.5 Prefix Wine e programmi installati
 
@@ -428,7 +428,7 @@ Esito atteso: `apt update` non produce errori 404, che è la differenza più vis
 
 ## Fase 6: verifica della catena audio
 
-Obiettivo: accertarsi che il kernel a bassa latenza e la Scarlett 2i2 funzionino, prima di costruire l'ambiente Wine sopra.
+Obiettivo: accertarsi che la configurazione a bassa latenza sia in vigore e che il sottosistema audio funzioni, prima di costruire l'ambiente Wine sopra. Il controllo non riguarda una interfaccia esterna specifica: al 2026-09-09 la macchina ha la sola scheda integrata `ALC887-VD`, e quale interfaccia servirà alla misura è una decisione aperta, si veda MS-079.
 
 ```bash
 uname -r
@@ -464,9 +464,9 @@ Se i gruppi mancano si aggiungono, tenendo presente che l'appartenenza si applic
 sudo usermod -aG audio,pipewire alesop95 && id -nG alesop95
 ```
 
-Controllo di uscita: la Scarlett 2i2 compare in ingresso e in uscita, e una riproduzione di prova si sente.
+Controllo di uscita: i dispositivi audio presenti compaiono in ingresso e in uscita e una riproduzione di prova si sente, con i parametri di avvio confermati in `/proc/cmdline` e i limiti realtime confermati da `ulimit -r -l` e non dalla sola lettura dei file di configurazione.
 
-Va notato che al 2026-09-07 la Scarlett *non era collegata*: `lsusb` non riportava alcun dispositivo Focusrite e le sole schede viste erano l'audio integrato `ALC887-VD` con le sue uscite HDMI. Questo controllo di uscita non è quindi eseguibile finché l'interfaccia non viene collegata, e non è un difetto del sistema.
+Sul perché questo controllo non nomina più una interfaccia esterna va registrata la correzione. Al 2026-09-07 e di nuovo al 2026-09-09 `lsusb` non riportava alcun dispositivo Focusrite, e le sole schede viste erano l'audio integrato `ALC887-VD` con le sue uscite HDMI. La versione precedente di questa fase ne concludeva che la Scarlett 2i2 fosse presente ma staccata, perché altre pagine la dichiaravano come hardware della macchina; l'utente ha chiarito il 2026-09-09 di possederla ma di non impiegarla in questo progetto. Il controllo si esegue quindi sui dispositivi effettivamente presenti, e il requisito di un ingresso con alimentazione phantom resta aperto. Si veda MS-079.
 
 ## Fase 7: ricostruzione dell'ambiente Wine
 
@@ -619,7 +619,7 @@ cd ~/electroacoustics/progetto-stanza/diy/Arta
 WINEPREFIX=~/wineprefixes/arta64 wine ArtaSetup171.exe
 ```
 
-Un avvertimento sull'uso: ARTA è un programma di misura e vuole accedere alla scheda audio, e sotto Wine quell'accesso passa dal driver audio di Wine verso PipeWire, con latenza e stabilità che non sono quelle di un programma nativo. Per produrre un GLL da misure già acquisite il problema non si pone, perché si lavora su file. Per una misura dal vivo con la Scarlett 2i2 si usa REW.
+Un avvertimento sull'uso: ARTA è un programma di misura e vuole accedere alla scheda audio, e sotto Wine quell'accesso passa dal driver audio di Wine verso PipeWire, con latenza e stabilità che non sono quelle di un programma nativo. Per produrre un GLL da misure già acquisite il problema non si pone, perché si lavora su file. Per una misura dal vivo si usa REW, che è nativo.
 
 ### 8.8 Ramsete 27b, solo se la licenza lo consente
 
@@ -789,7 +789,7 @@ uname -a > 14-kernel.txt 2>&1
 dpkg --print-foreign-architectures > 15-architetture.txt 2>&1
 ```
 
-Il confronto atteso, voce per voce. Il sistema passa da 25.04 a 26.04. La direttiva di aggiornamento resta `Prompt=lts`, ma ora su una base che ne trae vantaggio. Le partizioni sono le stesse quattro, con `/home` invariata negli identificativi univoci. La Scarlett 2i2 è vista come prima. I prefix Wine sono quattro e nuovi, invece del prefix di default sedimentato. L'elenco delle architetture straniere è vuoto, mentre prima conteneva `i386`. I pacchetti installati manualmente sono meno di prima, perché l'ambiente è ricostruito con l'essenziale.
+Il confronto atteso, voce per voce. Il sistema passa da 25.04 a 26.04. La direttiva di aggiornamento resta `Prompt=lts`, ma ora su una base che ne trae vantaggio. Le partizioni sono le stesse quattro, con `/home` invariata negli identificativi univoci. I dispositivi audio sono visti come prima. I prefix Wine sono quattro e nuovi, invece del prefix di default sedimentato. L'elenco delle architetture straniere è vuoto, mentre prima conteneva `i386`. I pacchetti installati manualmente sono meno di prima, perché l'ambiente è ricostruito con l'essenziale.
 
 E il controllo che conta più di tutti: Akabak si apre, accetta lo stesso Release Code, e VACS non ne chiede un secondo.
 

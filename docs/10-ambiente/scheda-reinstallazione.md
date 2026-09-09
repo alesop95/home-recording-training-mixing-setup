@@ -85,7 +85,7 @@ I limiti per il gruppo audio stanno in un file sotto `/etc/security/limits.d/`, 
 @audio   -  memlock     unlimited
 ```
 
-Verifiche: `cat /proc/cmdline` deve contenere i due parametri, `ulimit -r -l` deve riportare i valori, e `aplay -l` deve vedere la Scarlett 2i2.
+Verifiche: `cat /proc/cmdline` deve contenere i parametri, `ulimit -r -l` deve riportare `95` e `unlimited`, e `aplay -l` deve vedere i dispositivi audio presenti. Attenzione: i limiti si leggono con `ulimit` e non nei file di `/etc/security/limits.d/`, perché quei file sono giusti anche quando l'utente non appartiene ai gruppi `audio` e `pipewire` e quindi i limiti non sono in vigore.
 
 ## Wine: la parte dove un errore costa il programma
 

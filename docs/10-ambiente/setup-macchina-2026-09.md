@@ -215,7 +215,7 @@ Sulle unità di misura vale un'avvertenza, perché la stessa partizione compare 
 
 Restano le fasi da 6 a 9 della procedura, e il loro ordine non è arbitrario.
 
-La verifica della catena audio è incompleta per una ragione fisica: la Scarlett 2i2 non è collegata al bus USB, quindi `aplay -l` vede la sola scheda integrata `ALC887-VD`. Non è un difetto del sistema e va rifatta con l'interfaccia attaccata.
+La verifica della catena audio è incompleta, ma non per la ragione che era stata scritta. Non manca una interfaccia staccata da collegare: manca una decisione. Al 2026-09-09 la macchina ha la sola scheda integrata `ALC887-VD` e nessuna interfaccia esterna, e l'utente ha chiarito che la Focusrite Scarlett 2i2 che i documenti dichiaravano come hardware della macchina esiste ma non è impiegata in questo progetto. Il requisito della fase 8 resta, cioè un ingresso microfonico con alimentazione phantom per un microfono XLR calibrato, e la sua soddisfazione è aperta con due vincoli fissati dall'utente: dispositivo di classe audio che il kernel veda senza driver proprietari, e capacità di reggere anche le misure e non solo la registrazione. Il record del ritiro è in MS-079.
 
 La ricostruzione dell'ambiente Wine ha un ordine obbligato per ADR-016, cioè prima `dpkg --add-architecture i386`, poi l'installazione di Wine, e solo dopo la creazione o l'apertura di un prefix a 32 bit. Invertire i primi due passi produce un ambiente in cui Akabak non parte, ed è l'errore che tre decisioni precedenti avrebbero fatto commettere.
 

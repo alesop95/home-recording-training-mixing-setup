@@ -87,7 +87,7 @@ cd ~/electroacoustics/progetto-stanza/diy/Arta
 WINEPREFIX=~/wineprefixes/arta64 wine ArtaSetup171.exe
 ```
 
-C'è un punto da verificare sul campo e non da assumere: ARTA è un programma di misura, quindi vuole accedere alla scheda audio. Sotto Wine l'accesso passa dal driver audio di Wine verso PipeWire, e la latenza e la stabilità che ne risultano non sono quelle di un programma nativo. Per la produzione di un GLL da misure già acquisite il problema non si pone, perché si lavora su file; per una misura dal vivo con la Scarlett 2i2 conviene misurare in REW, che è nativo, ed esportare.
+C'è un punto da verificare sul campo e non da assumere: ARTA è un programma di misura, quindi vuole accedere alla scheda audio. Sotto Wine l'accesso passa dal driver audio di Wine verso PipeWire, e la latenza e la stabilità che ne risultano non sono quelle di un programma nativo. Per la produzione di un GLL da misure già acquisite il problema non si pone, perché si lavora su file; per una misura dal vivo conviene misurare in REW, che è nativo, ed esportare.
 
 ### EASE Focus 3.1.260 e il servizio di database AFMG
 

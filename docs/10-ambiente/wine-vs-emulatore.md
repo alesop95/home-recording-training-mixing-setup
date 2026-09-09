@@ -98,7 +98,7 @@ Cinque conseguenze pratiche, tutte già rilevanti per il lavoro fatto o da fare 
 
 La licenza di Akabak sopravvive a qualunque azzeramento, per il meccanismo spiegato sopra. È la ragione per cui la strada della reinstallazione pulita, descritta in `docs/10-ambiente/installazione-pulita-26-04.md`, non mette a rischio nulla, ed è la ragione per cui la decisione registrata come ADR-003 non si riapre.
 
-La catena audio resta quella nativa. REW, Blender, Octave e la Scarlett 2i2 parlano con PipeWire e JACK direttamente, con la latenza del kernel a bassa latenza di Ubuntu Studio. Se la parte di progettazione girasse in una macchina virtuale Windows, la latenza della catena e il passaggio USB attraverso lo strato di virtualizzazione diventerebbero un problema misurabile, e proprio nella fase in cui la precisione temporale è il dato che si sta cercando.
+La catena audio resta quella nativa. REW, Blender, Octave e l'interfaccia audio parlano con PipeWire e JACK direttamente, con la latenza del kernel a bassa latenza di Ubuntu Studio. Se la parte di progettazione girasse in una macchina virtuale Windows, la latenza della catena e il passaggio USB attraverso lo strato di virtualizzazione diventerebbero un problema misurabile, e proprio nella fase in cui la precisione temporale è il dato che si sta cercando.
 
 Il backup e il ripristino sono banali, perché salvare l'intero ambiente Akabak configurato è una copia ricorsiva della cartella del prefix.
 
