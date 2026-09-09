@@ -94,8 +94,10 @@ L'architettura a 32 bit va *dichiarata*, e va fatto prima di installare Wine e n
 ```bash
 sudo dpkg --add-architecture i386
 sudo apt update
-sudo apt install --install-recommends wine-stable winetricks
+sudo apt install --install-recommends wine winetricks
 ```
+
+Il pacchetto si chiama `wine` e non `wine-stable`: quel nome appartiene ai repository WineHQ e su Ubuntu 26.04 non esiste, verificato il 2026-09-09 in MS-081.
 
 | Programma | Prefix | Architettura | Dipendenze |
 |---|---|---|---|

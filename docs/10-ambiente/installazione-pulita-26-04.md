@@ -483,9 +483,11 @@ Ne segue la prima differenza rispetto alla versione precedente di questa fase: *
 ```bash
 sudo dpkg --add-architecture i386
 sudo apt update
-sudo apt install --install-recommends wine-stable winetricks
+sudo apt install --install-recommends wine winetricks
 wine --version
 ```
+
+Attenzione al nome del pacchetto, corretto il 2026-09-09 dopo averlo verificato sulla macchina: su Ubuntu 26.04 il pacchetto `wine-stable` non esiste e `apt-cache policy` risponde `Candidate: (none)`. Quel nome appartiene ai repository WineHQ, che il sistema precedente aveva attivi e che questa installazione non usa; il pacchetto dell'archivio Ubuntu si chiama `wine`, versione `10.0~repack-12ubuntu1`. Va notato inoltre che `wine32` risulta indisponibile finché l'architettura `i386` non è dichiarata, il che è la conferma pratica dell'ordine imposto da ADR-016. Il racconto è in MS-081.
 
 La seconda differenza resta valida: si decide una sola provenienza dei pacchetti e non si mescola, perché la fotografia ha trovato due repository WineHQ attivi per due rilasci diversi di Ubuntu.
 

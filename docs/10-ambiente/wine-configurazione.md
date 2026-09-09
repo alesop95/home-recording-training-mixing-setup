@@ -42,7 +42,7 @@ Ci sono due strade, e la differenza va capita perché produce ambienti diversi.
 La prima installa il metapacchetto stabile con le dipendenze raccomandate.
 
 ```bash
-sudo apt install --install-recommends wine-stable
+sudo apt install --install-recommends wine
 ```
 
 L'opzione `--install-recommends` tira dentro le dipendenze consigliate ed è quella che rende l'installazione completa invece di minimale. Questa strada di norma fornisce Wine a 64 bit; non garantisce che tutto il necessario per eseguire applicazioni a 32 bit sia presente senza passare da `winetricks`.

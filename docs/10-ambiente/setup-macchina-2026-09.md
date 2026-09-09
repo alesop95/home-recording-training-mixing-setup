@@ -185,6 +185,36 @@ sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.ta
 
 Questa forma è più radicale dell'impostazione grafica, perché impedisce anche la sospensione manuale, e la scelta è deliberata su una macchina che deve restare raggiungibile e che non ha ragioni di risparmio energetico da rispettare. È reversibile con `unmask` sugli stessi quattro bersagli. Il comando di verifica risponde `masked` quattro volte e con codice di uscita diverso da zero, che è la risposta giusta e non un errore.
 
+### 9 settembre, pomeriggio: l'ambiente Wine, e tre prescrizioni sbagliate su tre
+
+La fase 7 ha prodotto piu' correzioni documentali che comandi, e tutte e tre dello stesso tipo: una prescrizione scritta guardando un ambiente diverso da quello dove sarebbe stata eseguita.
+
+La prima e' stata intercettata prima di consegnare i comandi, verificando i nomi dei pacchetti sulla macchina invece di fidarsi della procedura. Il pacchetto prescritto, `wine-stable`, su Ubuntu 26.04 non esiste: `apt-cache policy` risponde `Candidate: (none)`, perche' quel nome appartiene ai repository WineHQ che il sistema precedente aveva attivi. Il pacchetto dell'archivio si chiama `wine`. E' MS-081.
+
+Lo stesso controllo ha dato una conferma non cercata dell'ordine imposto da ADR-016: prima di dichiarare l'architettura, `apt-cache policy wine32` risponde `Candidate: (none)` mentre `wine64` risponde con la versione. Non e' un pacchetto mancante, e' l'architettura non ancora abilitata.
+
+```bash
+sudo dpkg --add-architecture i386 && dpkg --print-foreign-architectures
+```
+
+```bash
+sudo apt update && apt-cache policy wine32 | head -3
+```
+
+Il secondo comando non e' cerimoniale: serve a vedere che `wine32` sia passato a una versione candidata prima di installare Wine, perche' se restasse indisponibile i pacchetti a 32 bit non entrerebbero e il difetto si manifesterebbe soltanto piu' tardi, come programma che non parte.
+
+La seconda prescrizione sbagliata e' emersa dall'esecuzione, ed e' la piu' grave delle tre. L'installazione con `--install-recommends wine winetricks` non installa `wine32`, che il metapacchetto si limita a *suggerire*, e l'opzione agisce sui raccomandati. Il risultato era un sistema con `i386` dichiarata, Wine installato, `wine --version` che risponde correttamente, e Akabak che non sarebbe partito: esattamente l'esito che ADR-016 doveva prevenire, raggiunto attraverso passi che sembravano tutti riusciti. Il controllo di uscita della fase, `wine --version`, era soddisfatto da un sistema difettoso, ed e' la terza volta in questo setup che un controllo si rivela piu' debole di cio' che deve provare. E' MS-082.
+
+```bash
+sudo apt install wine32:i386 && dpkg -l wine32:i386 | tail -1
+```
+
+Il ramo a 32 bit e' costato 263 pacchetti, 250 MB scaricati e 1,1 GB occupati, e il numero spiega perche' il metapacchetto non lo raccomandi: non e' un binario ma un albero di librerie parallelo, dalla `libc` fino a Mesa, GTK e GStreamer.
+
+La terza prescrizione sbagliata non stava in un documento ma in due file di configurazione del desktop, e sarebbe stata scoperta separatamente. I lanciatori di AKABAK e VACS sulla scrivania invocavano il programma con `wine-stable`, cioe' lo stesso nome inesistente di MS-081: erano rotti e lo sarebbero stati anche senza toccare nulla, con la finestra che non si apre e nessun messaggio utile. Corretti a `wine` in MS-083.
+
+Nella stessa occasione la scrivania e' stata separata dal magazzino. Il confronto per impronta fra `~/Desktop` e `~/electroacoustics` ha mostrato che 380 dei 647 valori distinti della scrivania non esistono nell'albero curato, e che sono le voci escluse da ADR-010, cioe' LSPCad in due versioni, FineCone, FineMotor e Grenander, piu' tre simulatori di amplificatori per chitarra che appartengono all'home recording. Dalla scrivania non andava quindi spostato nulla dentro il progetto: il difetto era che facesse contemporaneamente da spazio di lavoro e da magazzino da 2,3 GB. Il magazzino e' ora in `~/archivio`, con una pagina che dichiara che cos'e' ciascuna cosa, e sulla scrivania restano i due lanciatori, i progetti Ardour e il collegamento verso l'albero curato.
+
 ## Stato verificato al termine del setup
 
 Tutti i valori qui sotto sono stati letti sulla macchina il 9 settembre 2026, non desunti.
