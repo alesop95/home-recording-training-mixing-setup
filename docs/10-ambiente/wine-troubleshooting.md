@@ -21,9 +21,9 @@ Due cause distinte, che vale separare perché hanno cure diverse.
 La prima causa è un prefix non inizializzato o incoerente. Anche avendo installato `wine32`, il prefix esistente può essere stato creato quando quel binario non c'era, e non contiene le DLL di base per l'architettura richiesta. La cura è creare un prefix pulito, che alla prima esecuzione genera tutte le DLL di base, `kernel32.dll` compresa, e apre la finestra di configurazione senza errori.
 
 ```bash
-WINEARCH=win32 WINEPREFIX=~/wineprefixes/wine32 winecfg
-WINEPREFIX=~/wineprefixes/wine32 winetricks dotnet48 corefonts
-WINEPREFIX=~/wineprefixes/wine32 wine /percorso/al/programma.exe
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/wine32 wine32 winecfg
+WINE=wine32 WINEPREFIX=~/wineprefixes/wine32 winetricks dotnet48 corefonts
+WINEPREFIX=~/wineprefixes/wine32 wine32 /percorso/al/programma.exe
 ```
 
 Da quel momento tutti i programmi a 32 bit vanno lanciati indicando quel prefix, e questa è la ragione pratica per cui conviene fissare da subito una convenzione di percorsi dei prefix invece di improvvisarli.

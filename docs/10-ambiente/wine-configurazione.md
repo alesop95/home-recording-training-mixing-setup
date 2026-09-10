@@ -74,7 +74,7 @@ Lo strumento di configurazione si chiama `winecfg` e lavora sempre su un prefix:
 
 ```bash
 winecfg
-WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 wine32 winecfg
 ```
 
 Le due impostazioni che contano per i programmi di questo progetto sono nella scheda delle applicazioni e in quella della grafica. Nella prima si imposta la versione di Windows su *Windows 10*. Nella seconda si attiva l'opzione che permette al window manager di decorare le finestre, che evita i problemi di rendering più comuni.
@@ -90,7 +90,7 @@ Va detto subito, perché rovescia quanto il documento sorgente prescriveva: per 
 ```bash
 sudo apt install winetricks
 WINEPREFIX=~/wineprefixes/vituixcad64 winetricks -q dotnet48 corefonts
-WINEPREFIX=~/wineprefixes/winisd32 winetricks -q vcrun6 corefonts
+WINE=wine32 WINEPREFIX=~/wineprefixes/winisd32 winetricks -q vcrun6 corefonts
 ```
 
 L'opzione `-q` esegue in modalità non interattiva, cioè accetta automaticamente le finestre di installazione dei pacchetti Microsoft, e su una installazione da zero risparmia una quantità notevole di clic.
@@ -103,13 +103,13 @@ L'installazione di un eseguibile Windows si fa posizionandosi nella cartella dov
 
 ```bash
 cd ~/Downloads
-WINEPREFIX=~/wineprefixes/akabak32 wine AKABAK_Pro_v324b126.exe
+WINEPREFIX=~/wineprefixes/akabak32 wine32 AKABAK_Pro_v324b126.exe
 ```
 
 Il lancio successivo punta all'eseguibile installato dentro l'albero del prefix, ricordando che il percorso Windows che il programma dichiara corrisponde a un percorso Linux dentro `drive_c`.
 
 ```bash
-WINEPREFIX=~/wineprefixes/akabak32 wine "C:/Program Files/RDTeam/AKABAK/AKABAK.exe"
+WINEPREFIX=~/wineprefixes/akabak32 wine32 "C:/Program Files/RDTeam/AKABAK/AKABAK.exe"
 ```
 
 La forma con il percorso Windows fra apici doppi è preferibile alla forma con il percorso Linux, perché evita di dover proteggere gli spazi nei nomi di cartella come `Program Files`.

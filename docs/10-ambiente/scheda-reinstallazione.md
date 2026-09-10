@@ -107,7 +107,7 @@ Il pacchetto si chiama `wine` e non `wine-stable`: quel nome appartiene ai repos
 | EASE Focus 3.1.260 | `~/wineprefixes/easefocus64` | win64 | `dotnet48 corefonts` |
 
 ```bash
-WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 wine32 winecfg
 ```
 
 Attenzione al comando e non solo al prefix: con entrambi i rami di Wine installati, il comando `wine` sceglie sempre il caricatore a 64 bit e su un prefix `win32` fallisce con `is a 32-bit installation, it cannot support 64-bit applications`. Per il prefix a 32 bit il comando è `wine32`, sempre con `WINEPREFIX` dichiarato. Vedi MS-084.
@@ -121,8 +121,8 @@ Akabak e VACS *non* richiedono .NET, font Microsoft o runtime Visual C++: il pre
 Gli installer sono sulla macchina, in `~/electroacoustics/installers/`, e sopravvivono alla reinstallazione perché stanno dentro `/home`.
 
 ```bash
-WINEPREFIX=~/wineprefixes/akabak32 wine ~/electroacoustics/installers/AKABAK_Pro_v324b126.exe
-WINEPREFIX=~/wineprefixes/akabak32 wine ~/electroacoustics/installers/VACS_32_v213b33.exe
+WINEPREFIX=~/wineprefixes/akabak32 wine32 ~/electroacoustics/installers/AKABAK_Pro_v324b126.exe
+WINEPREFIX=~/wineprefixes/akabak32 wine32 ~/electroacoustics/installers/VACS_32_v213b33.exe
 ```
 
 La licenza è legata alla macchina e non al prefix, quindi il codice esistente resta valido. Si inserisce *una volta sola*, da AKABAK, e VACS non ne chiede un secondo.

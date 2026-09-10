@@ -17,9 +17,9 @@ La versione scaricabile dal sito dell'autore non è una demo limitata nel tempo 
 *Correzione del 2026-09-07, che smentisce quanto il documento sorgente affermava.* L'eseguibile installato sulla macchina, `AKABAK.exe`, è `PE32 executable, Intel 80386`, cioè *a 32 bit*, e vive in un prefix il cui registro dichiara `#arch=win32`. Il sorgente affermava architettura a 64 bit senza build alternativa, requisito di Windows 10 o 11 a 64 bit e bisogno di .NET 4.8: nessuna delle tre affermazioni è confermata dall'installazione funzionante, che non ha alcun `winetricks.log`, alcun `Microsoft.NET/Framework/v4` e alcun font Microsoft di base. Serve quindi un prefix a *32 bit*, senza dipendenze aggiuntive. Il quadro è in ADR-016.
 
 ```bash
-WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 wine32 winecfg
 cd ~/electroacoustics/installers
-WINEPREFIX=~/wineprefixes/akabak32 wine AKABAK_Pro_v324b126.exe
+WINEPREFIX=~/wineprefixes/akabak32 wine32 AKABAK_Pro_v324b126.exe
 ```
 
 Il nome dell'installer è quello reale, `AKABAK_Pro_v324b126.exe`, e non `setup_akabak3_x64.exe` come il sorgente indicava: quel file non esiste, e il suffisso `x64` nel nome inventato era coerente con l'affermazione sbagliata sull'architettura.
@@ -70,8 +70,8 @@ WinISD serve all'ottimizzazione del volume e dell'accordo bass reflex, e nel wor
 Se si vuole comunque averlo, l'applicazione è vecchia e distribuita solo a 32 bit, quindi va in un prefix a 32 bit, dove le librerie datate e i runtime ridotti si installano senza problemi. Metterlo in un prefix a 64 bit fa correre complicazioni inutili senza alcun vantaggio.
 
 ```bash
-WINEARCH=win32 WINEPREFIX=~/wineprefixes/winisd32 winecfg
-WINEPREFIX=~/wineprefixes/winisd32 winetricks -q vcrun6 corefonts
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/winisd32 wine32 winecfg
+WINE=wine32 WINEPREFIX=~/wineprefixes/winisd32 winetricks -q vcrun6 corefonts
 ```
 
 Alcune build sperimentali richiedono .NET 2.0 invece dei soli runtime Visual C++, e in quel caso si aggiunge `dotnet20` nello stesso prefix.

@@ -500,7 +500,7 @@ WINEPREFIX=~/wineprefixes/akabak32 wine32 "C:/Program Files/RDTeam/AKABAK/AKABAK
 Poi i prefix, quattro, con *architetture diverse* e non tutte a 64 bit.
 
 ```bash
-WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 wine32 winecfg
 WINEARCH=win64 WINEPREFIX=~/wineprefixes/vituixcad64 winecfg
 WINEARCH=win64 WINEPREFIX=~/wineprefixes/easefocus64 winecfg
 WINEARCH=win64 WINEPREFIX=~/wineprefixes/arta64 winecfg
@@ -518,7 +518,7 @@ Per VituixCAD ed EASE Focus i requisiti restano quelli dichiarati dai produttori
 
 In ciascun prefix, dalla scheda delle applicazioni di `winecfg` si imposta la versione di Windows su Windows 10, e dalla scheda della grafica si attiva la decorazione delle finestre da parte del window manager.
 
-Controllo di uscita della fase 7: i quattro prefix esistono, ciascuno contiene il proprio `system.reg`, e `winecfg` si apre in ciascuno senza errori su `kernel32.dll`. Il controllo che vale più degli altri è l'architettura dichiarata, perché è il punto su cui la versione precedente di questa fase sbagliava.
+Controllo di uscita della fase 7: i quattro prefix esistono, ciascuno contiene il proprio `system.reg`, e la finestra di configurazione si apre in ciascuno senza errori su `kernel32.dll`. Il comando con cui si apre non è lo stesso per tutti, e la differenza è vincolante: sui prefix a 64 bit è `winecfg`, sul prefix a 32 bit è `wine32 winecfg`, perché `/usr/bin/winecfg` è uno script che esegue incondizionatamente il wrapper a 64 bit e su un prefix `win32` fallisce. Il controllo che vale più degli altri è l'architettura dichiarata, perché è il punto su cui la versione precedente di questa fase sbagliava.
 
 ```bash
 find ~/wineprefixes -maxdepth 2 -name system.reg -exec grep -H -m1 "#arch" {} +
@@ -532,14 +532,16 @@ find ~/wineprefixes -maxdepth 2 -name "system.reg" -printf "%h\n"
 
 ## Fase 8: reinstallazione dei programmi e riattivazione della licenza
 
+Questa fase è oggi più corta di come fu scritta, e la riduzione è un risultato verificato e non una semplificazione. Il prefix `~/.wine` è sopravvissuto alla reinstallazione, perché vive in `/home`, con AKABAK e VACS installati dentro e la licenza attiva nel proprio file di configurazione; aperto con `wine32` sotto Wine 10 si è migrato senza rompersi, e lo stato della licenza è stato verificato per due vie indipendenti in MS-085. Le sottofasi 8.1 e 8.2 non vanno quindi eseguite su questa macchina. Restano scritte perché servono a chi ricostruisse da zero, per esempio dopo la perdita di `/home` o su una macchina diversa, e portano ora il comando corretto; il prefix che nominano, `~/wineprefixes/akabak32`, è quello che una ricostruzione da zero creerebbe, mentre il prefix operativo su questa macchina è `~/.wine`. Il lavoro reale della fase 8 comincia dalla sottofase 8.3.
+
 ### 8.1 Akabak e VACS
 
 Gli installer sono già sulla macchina, portati dalla fase 1.
 
 ```bash
 cd ~/electroacoustics/installers
-WINEPREFIX=~/wineprefixes/akabak32 wine AKABAK_Pro_v324b126.exe
-WINEPREFIX=~/wineprefixes/akabak32 wine VACS_32_v213b33.exe
+WINEPREFIX=~/wineprefixes/akabak32 wine32 AKABAK_Pro_v324b126.exe
+WINEPREFIX=~/wineprefixes/akabak32 wine32 VACS_32_v213b33.exe
 ```
 
 Due correzioni rispetto alla versione precedente di questo passo, entrambe da ADR-016. Il prefix è a *32 bit* e non a 64, perché l'eseguibile installato è PE32 i386. E la variante di VACS è la *32 bit*, non la 64: è quella che il lanciatore sulla scrivania della macchina invoca, cioè `VACS_32.exe` in `C:\Program Files\RDTeam\VACS2`.
@@ -555,7 +557,7 @@ I due programmi vanno nello stesso prefix, perché si usano in sequenza e perch�
 Si apre Akabak nel prefix corretto, si va nel menu di aiuto alla voce del release code, si controlla che il Machine Identifier mostrato sia lo stesso letto in fase 0.6, e si inserisce il codice permanente. I due valori sono nella scheda riservata sotto `_notes/`, non nel repository.
 
 ```bash
-WINEPREFIX=~/wineprefixes/akabak32 wine "C:/Program Files/RDTeam/AKABAK/AKABAK.exe"
+WINEPREFIX=~/wineprefixes/akabak32 wine32 "C:/Program Files/RDTeam/AKABAK/AKABAK.exe"
 ```
 
 Esito atteso: il Machine Identifier è invariato, il codice viene accettato, e all'avvio successivo di VACS non viene richiesto un secondo codice, perché un solo codice copre entrambi i programmi.

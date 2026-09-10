@@ -15,7 +15,7 @@ Wine è il motore, e di quello ce n'è una sola installazione: il binario in `/u
 Il prefix di default è `~/.wine`. Per crearne altri si valorizza la variabile `WINEPREFIX` davanti al comando, e la prima esecuzione di uno strumento di Wine in una cartella inesistente la crea e la inizializza.
 
 ```bash
-WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 wine32 winecfg
 WINEARCH=win64 WINEPREFIX=~/wineprefixes/vituixcad64 winecfg
 WINEARCH=win64 WINEPREFIX=~/wineprefixes/easefocus64 winecfg
 ```
@@ -33,7 +33,7 @@ cp -r ~/wineprefixes/akabak32 ~/wineprefixes/akabak32-backup
 Alla creazione di un prefix Wine deve decidere se simulare un ambiente Windows a 32 o a 64 bit, e la decisione non è reversibile senza ricreare il prefix. Determina come sono strutturate le cartelle `System32` e `SysWOW64`, quali API sono disponibili e se Wine userà librerie e runtime a 32 o a 64 bit. Il default nelle versioni moderne è 64 bit; per un prefix a 32 bit si valorizza anche `WINEARCH`.
 
 ```bash
-WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 winecfg
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/akabak32 wine32 winecfg
 WINEARCH=win64 WINEPREFIX=~/wineprefixes/vituixcad64 winecfg
 ```
 

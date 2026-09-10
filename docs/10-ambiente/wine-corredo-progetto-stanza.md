@@ -137,10 +137,10 @@ Sullo stato di licenza, l'onestà impone di dichiarare che non si sa. La cartell
 Se la verifica dà esito positivo, la procedura è la seguente.
 
 ```bash
-WINEARCH=win32 WINEPREFIX=~/wineprefixes/ramsete32 winecfg
-WINEPREFIX=~/wineprefixes/ramsete32 winetricks -q vb6run corefonts
+WINEARCH=win32 WINEPREFIX=~/wineprefixes/ramsete32 wine32 winecfg
+WINE=wine32 WINEPREFIX=~/wineprefixes/ramsete32 winetricks -q vb6run corefonts
 cd ~/electroacoustics/progetto-stanza/room/Ramsete27b
-WINEPREFIX=~/wineprefixes/ramsete32 wine setup.exe
+WINEPREFIX=~/wineprefixes/ramsete32 wine32 setup.exe
 ```
 
 Va aggiunto un giudizio di priorità, per non spendere tempo su una cosa che il progetto non usa. Il ruolo di Ramsete nel workflow sarebbe l'acustica architettonica, ed è coperto da Akabak, che fa elettroacustica e acustica ambientale in un solo passaggio ed è già licenziato e funzionante. Ramsete è quindi un supplemento facoltativo, non un tassello mancante, e la sua installazione sta in fondo alla lista.
