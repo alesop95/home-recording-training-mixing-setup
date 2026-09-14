@@ -497,6 +497,12 @@ Un passo che la procedura non conteneva e senza cui la decisione sui 32 bit rest
 WINEPREFIX=~/wineprefixes/akabak32 wine32 "C:/Program Files/RDTeam/AKABAK/AKABAK.exe"
 ```
 
+Prima dei prefix va creata la cartella che li contiene, e non è un dettaglio di ordine: Wine crea la cartella del prefix ma non quelle che la contengono, quindi se `~/wineprefixes` non esiste il primo comando fallisce con `wine: chdir to ... : No such file or directory`, che parla di un accesso e non di una creazione e manda la diagnosi sulla pista sbagliata. Il difetto è stato incontrato per davvero il 2026-09-14 ed è MS-099.
+
+```bash
+mkdir -p ~/wineprefixes
+```
+
 Poi i prefix, quattro, con *architetture diverse* e non tutte a 64 bit.
 
 ```bash
