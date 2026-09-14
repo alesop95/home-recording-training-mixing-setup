@@ -52,6 +52,35 @@ file /percorso/al/programma.exe
 
 Se il secondo comando non risponde, il binario a 32 bit non è installato. Se il terzo dichiara un eseguibile PE a 32 bit mentre solo `wine64` è presente, la causa è quella. La cura è installare i pacchetti mancanti e creare un prefix a 32 bit pulito con i runtime corretti, che risolve quasi sempre.
 
+## Errore: no driver could be loaded, lanciando da una sessione SSH
+
+Il sintomo è una coppia di righe che compare subito dopo l'avvio e prima che nulla appaia a schermo, seguita da una eccezione non gestita che apre il debugger.
+
+```
+err:winediag:nodrv_CreateWindow Application tried to create a window, but no driver could be loaded.
+err:winediag:nodrv_CreateWindow L"The explorer process failed to start."
+```
+
+Il messaggio va letto per quello che dice e non per quello che sembra. Non dice che manchi un driver grafico sul sistema, e non dice che il prefix sia rotto: dice che Wine, dovendo creare una finestra, non ha trovato alcun driver che sapesse dove disegnarla. La differenza è fra una assenza e una indicazione mancante, ed è la stessa distinzione per cui un programma non trova un file quando il percorso è vuoto invece che quando il file è stato cancellato.
+
+La diagnosi va fatta su quattro fatti, e conviene raccoglierli tutti prima di toccare qualcosa, perché tre di essi escludono le cause che verrebbero in mente per prime. I driver esistono, e per l'architettura giusta: `find /usr/lib -name "winex11.drv*" -o -name "winewayland.drv*"` li trova sotto `i386-windows` e non solo sotto `x86_64-windows`, quindi il ramo a 32 bit è completo. La sessione grafica è viva: `loginctl list-sessions` mostra una sessione di tipo `wayland` su `seat0`, attiva. I socket ci sono entrambi, cioè `wayland-0` dentro `/run/user/1000` e `X0` dentro `/tmp/.X11-unix`. E il registro del prefix non dichiara alcun driver grafico, quindi non c'è una scelta sbagliata scritta da qualche parte: la chiave `Software\Wine\Drivers` contiene le sole voci di `winepulse.drv`, che riguardano l'audio.
+
+Il quinto fatto è la causa. In una sessione aperta via SSH le variabili `DISPLAY` e `WAYLAND_DISPLAY` sono entrambe vuote, mentre `XDG_RUNTIME_DIR` vale `/run/user/1000` e `XDG_SESSION_TYPE` vale `tty`. Wine non ha quindi alcun indirizzo a cui mandare la finestra, e lo dichiara nel solo modo che conosce.
+
+*Una spiegazione precedente, qui ritirata.* Il 2026-09-09 questo progetto aveva registrato che una sessione SSH dispone comunque di un display, perché la libreria di Wayland ricadrebbe sul socket predefinito dentro `XDG_RUNTIME_DIR`, che la sessione remota eredita. La prova del 2026-09-14 smentisce quella spiegazione: `XDG_RUNTIME_DIR` è impostata, il socket `wayland-0` esiste, e l'avvio fallisce lo stesso. Anche impostare a mano `WAYLAND_DISPLAY=wayland-0` non basta, e l'errore resta identico. Perché la via Wayland non funzioni su questa installazione non è accertato e non va supposto; il modo di accertarlo, se un giorno servisse, è dichiarare esplicitamente il driver nel registro del prefix e osservare che cosa cambia. Non serve adesso, perché la via X11 funziona.
+
+La causa dell'errore di allora non era dunque quella scritta. La spiegazione era plausibile e si adattava a ciò che si era visto, cioè una finestra comparsa; non era però stata messa alla prova, e alla prima occasione in cui avrebbe dovuto predire un esito ha predetto quello sbagliato. La lezione generale è che una spiegazione che si adatta a una osservazione non è verificata finché non ne predice una seconda, e che il momento di metterla alla prova è quello in cui la si scrive, non quello in cui fallisce.
+
+*La forma che funziona.* Servono due variabili insieme, e nessuna delle due da sola basta. La prima è `DISPLAY`, che dice a quale server X mandare la finestra, e su questa macchina è `:0`, cioè XWayland dentro la sessione Plasma. La seconda è `XAUTHORITY`, che dice dove sta il biscotto di autorizzazione senza il quale quel server rifiuta la connessione: la sessione lo scrive in `/run/user/1000/` con un nome che contiene una parte casuale, quindi va ricavato e non trascritto.
+
+```bash
+WINEPREFIX=$HOME/.wine DISPLAY=:0 XAUTHORITY=$(ls -1 /run/user/$(id -u)/xauth_* | head -1) wine32 "C:/Program Files/RDTeam/AKABAK/AKABAK.exe"
+```
+
+La parte che ricava il file di autorizzazione non è pignoleria: quel nome cambia a ogni nuovo accesso grafico, quindi un comando che lo trascrive funziona oggi e fallisce dopo il primo riavvio, e fallisce con un errore diverso, cioè un rifiuto di connessione al server X invece che l'assenza di driver, il che manderebbe la diagnosi su una pista sbagliata.
+
+*Quando questo problema non si presenta.* Lanciando dal terminale della macchina dentro la sessione grafica, oppure cliccando i lanciatori sulla scrivania, le due variabili sono già impostate dalla sessione e il comando nudo funziona. Il guasto riguarda quindi il solo lavoro da remoto, che è però il modo in cui questo progetto amministra la macchina.
+
 ## Provenienza dei pacchetti e stabilità
 
 I repository di Ubuntu dividono Wine in pacchetti separati e non sempre offrono la versione più recente. Per stabilità, in particolare sul supporto a .NET che è la dipendenza critica di tutti i programmi di questo progetto, il repository ufficiale di WineHQ è preferibile. Su Ubuntu Studio conviene assicurarsi di essere almeno alla versione 9.0 di Wine; la versione osservata sulla macchina era `wine-9.0 (Ubuntu 9.0~repack-4build3)`, quindi al limite inferiore accettabile e proveniente dai repository della distribuzione.
