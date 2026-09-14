@@ -578,13 +578,25 @@ Controllo di uscita della sottofase, e come è stato eseguito. Si registrano le 
 
 ### 8.4 Gli esempi di Akabak
 
+Il pacchetto degli esempi è materiale di lavoro e non documentazione accessoria: la fase 5 del progetto comincia adattando un esempio di sistema a due vie.
+
+Questa sottofase non si esegue alla cieca, e il 2026-09-14 su questa macchina non si è eseguita affatto. Prima si verifica se gli esempi siano già al loro posto, perché il programma dichiara da sé dove li cerca: la chiave `ExamplePath` in `AppData\Local\RDTeam\Akabak.ini` vale per default `C:\Program Files\RDTeam\AKABAK\AKABAK Examples`, ed è la cartella che il menu `File/Open Example` apre.
+
 ```bash
-cd ~/electroacoustics/examples
-unzip AKABAK-Examples.zip -d ~/AkabakProjects/esempi
-ls ~/AkabakProjects/esempi | head
+E="$HOME/.wine/drive_c/Program Files/RDTeam/AKABAK/AKABAK Examples"; ls -d "$E" && find "$E" -type f | wc -l
 ```
 
-Il pacchetto degli esempi è materiale di lavoro e non documentazione accessoria: la fase 5 del progetto comincia adattando un esempio di sistema a due vie.
+Se la cartella esiste, la presenza non basta come verifica e va confrontato il contenuto, perché una estrazione interrotta lascia nomi giusti e file troncati. Il confronto corretto è per impronta: i CRC-32 stanno già dentro l'archivio, quindi si leggono da lì e si ricalcolano sui file estratti, senza bisogno di una impronta crittografica, dato che qui non ci si difende da una manomissione ma si accerta l'integrità di una copia. Un confronto per numero di voci inganna, perché `unzip -l` conta anche le cartelle mentre `find -type f` no.
+
+Si estrae soltanto se gli esempi mancano, e si estrae nel percorso che il programma dichiara, non in uno inventato.
+
+```bash
+unzip -q ~/electroacoustics/examples/AKABAK-Examples.zip -d "$HOME/.wine/drive_c/Program Files/RDTeam/AKABAK/"
+```
+
+Se si preferisce tenerli altrove, per esempio sotto `~/Documents/AkabakProjects/esempi`, allora va aggiornata di conseguenza la chiave `ExamplePath`, che si scrive nel file di configurazione senza passare dai menu. Ciò che non va fatto è estrarre in un percorso diverso lasciando la chiave dov'era: si otterrebbero due copie della stessa cosa, con il programma che apre l'una e la documentazione che nomina l'altra, ed è il modo in cui due copie divergono senza che nessuno se ne accorga.
+
+Su questa macchina la verifica del 2026-09-14 ha dato 632 file per parte, zero differenze di nome e zero CRC divergenti, quindi la sottofase è chiusa senza avere estratto nulla. Il racconto è in MS-095.
 
 ### 8.5 VituixCAD
 
