@@ -566,7 +566,13 @@ Se il Machine Identifier fosse cambiato, non si insiste: si contatta l'autore. I
 
 ### 8.3 Il limite delle pipeline COM, da configurare subito
 
-L'autore del software ha dichiarato che su Linux il trasferimento dei dati fra AKABAK e VACS avviene attraverso gli appunti di sistema e non tramite COM. L'impostazione relativa sta nelle preferenze di AKABAK, e conviene verificarla adesso invece di scoprirla alla prima iterazione della fase 5 del progetto. Il dettaglio sta in `docs/90-riferimenti/timeline-akabak-vacs.md`.
+Su Linux il trasferimento dei dati fra AKABAK e VACS non passa da COM, che Wine non implementa in questa parte, e la guida del programma dichiara Linux come esempio di sistema in cui serve una alternativa. Le alternative sono due, cioè gli appunti di sistema e i file su disco, e questo progetto sceglie i file per ADR-020. La nozione, con il funzionamento di COM e le ragioni della scelta, sta in `docs/90-riferimenti/timeline-akabak-vacs.md`; l'accertamento che ha prodotto i nomi dei menu è MS-090.
+
+Conviene configurare adesso invece di scoprirlo alla prima iterazione della fase 5, e i passi sono i seguenti. Si apre AKABAK nel prefix, si va al menu `Options/Preferences` e si seleziona la pagina `VACS`. Là si imposta il modo di trasferimento su `Files`, lasciando la cartella di destinazione al default, che è la cartella del progetto. La stessa impostazione resta sovrascrivibile per singola osservazione nella pagina `Range` della sua form, quindi la scelta qui è un default e non un vincolo.
+
+Un punto da accertare e non da assumere, perché le due pagine della guida non concordano. Il capitolo `VACS` dell'appendice indica quella pagina delle preferenze come il luogo della selezione globale del modo; la pagina `Form - Preferences`, invece, descrive la propria pagina `VACS` come una pagina che informa soltanto su dove scaricare il modulo. La verifica in interfaccia serve quindi a stabilire quale delle due descrizioni corrisponda alla versione `3.2.4 b126`, e l'esito va scritto nel registro dei microstep in un verso o nell'altro.
+
+Controllo di uscita della sottofase: il modo di trasferimento risulta `Files` alla riapertura delle preferenze, quindi l'impostazione è persistita e non soltanto accettata. Un controllo più forte, da fare quando esisterà un progetto da calcolare, è che una osservazione spettrale produca i file nella cartella attesa e che VACS li importi con il menu `IO/Import Data`.
 
 ### 8.4 Gli esempi di Akabak
 
