@@ -81,6 +81,33 @@ La parte che ricava il file di autorizzazione non è pignoleria: quel nome cambi
 
 *Quando questo problema non si presenta.* Lanciando dal terminale della macchina dentro la sessione grafica, oppure cliccando i lanciatori sulla scrivania, le due variabili sono già impostate dalla sessione e il comando nudo funziona. Il guasto riguarda quindi il solo lavoro da remoto, che è però il modo in cui questo progetto amministra la macchina.
 
+## Errore: un programma .NET fallisce dentro System.Drawing prima di mostrare una finestra
+
+Il sintomo è un programma che non apre nulla e termina con una eccezione la cui catena di chiamate finisce dentro una classe grafica della libreria standard di .NET, tipicamente il costruttore di `System.Drawing.Icon` o `System.Drawing.Bitmap`. Il messaggio cambia a seconda del runtime installato nel prefix, e i due che si incontrano sono questi.
+
+```
+System.ArgumentException: A null reference or invalid value was found [GDI+ status: InvalidParameter]
+System.Runtime.InteropServices.ExternalException: A generic error occurred in GDI+
+```
+
+La prima forma la produce Wine Mono, la seconda il .NET Framework di Microsoft installato con `winetricks -q dotnet48`. Vedere cambiare il messaggio dopo avere installato il framework è un dato utile e va letto per quello che è: dimostra che il runtime è davvero cambiato, quindi che l'installazione è riuscita, e insieme che il framework non era la causa del guasto. La catena delle chiamate, se si confrontano le due eccezioni riga per riga, resta identica fino all'ultimo elemento.
+
+La causa è lo strato sottostante. GDI+[^gdi] è il sottosistema grafico di Windows su cui `System.Drawing` poggia, e nessuno dei due runtime .NET ne porta uno proprio: entrambi si appoggiano a quello del sistema, che sotto Wine è la reimplementazione di Wine. Un programma che esca dai sentieri battuti, per esempio caricando una icona da un vettore di byte invece che da un file, incontra allora uno scarto fra la reimplementazione e l'originale, e quello scarto si manifesta come un errore generico perché è tutto ciò che la funzione chiamante sa dire.
+
+Il rimedio è sostituire la libreria di Wine con quella originale di Windows.
+
+```bash
+WINEPREFIX=~/wineprefixes/<nome del prefix> winetricks -q gdiplus
+```
+
+Due cose vanno sapute prima di lanciarlo, perché altrimenti sorprendono. La prima è il costo: il verbo non scarica una libreria ma i due pacchetti di aggiornamento di Windows 7 SP1, uno per architettura, per circa 1,8 GB complessivi, e da ciascuno estrae il solo `gdiplus.dll`, che pesa fra 1,5 e 2,1 MB. Lo scaricamento finisce nella cache di `winetricks` dentro la cartella dell'utente, quindi si paga una volta sola e i prefix successivi lo riusano. La seconda è che le architetture installate sono due, cioè il file a 32 bit in `C:\windows\syswow64` e quello a 64 bit in `C:\windows\system32`, e questo è precisamente ciò che serve in un prefix a 64 bit che ospiti un programma a 32, che è il caso più comune fra i programmi di elettroacustica.
+
+La verifica è il riavvio del programma, e conviene farla su tre prove invece che su una, perché da remoto la prima e la seconda ingannano. L'elenco delle finestre con `wmctrl -l` dice che una finestra esiste, ma può elencare anche finestre di crash rimaste aperte da tentativi precedenti, quindi va letta insieme al processo a cui appartengono. La cattura della finestra con `import` mostra che l'interfaccia è disegnata, ed è la prova visiva. La terza è la più forte e va cercata sempre: molti programmi .NET scrivono un proprio registro degli errori sotto `AppData\Local`, e un avvio riuscito è esattamente un avvio che in quel file non aggiunge nulla.
+
+Il caso reale da cui questa scheda nasce è EASE Focus 3.1.260, dove il framework era necessario e non sufficiente, ed è raccontato in MS-108, MS-109 e MS-110 del registro dei microstep.
+
+[^gdi]: *GDI+*, Graphics Device Interface Plus - il sottosistema grafico di Windows per il disegno bidimensionale, le immagini e i caratteri; Wine ne fornisce una reimplementazione libera, che è sufficiente per la gran parte dei programmi e non per tutti.
+
 ## Provenienza dei pacchetti e stabilità
 
 I repository di Ubuntu dividono Wine in pacchetti separati e non sempre offrono la versione più recente. Per stabilità, in particolare sul supporto a .NET che è la dipendenza critica di tutti i programmi di questo progetto, il repository ufficiale di WineHQ è preferibile. Su Ubuntu Studio conviene assicurarsi di essere almeno alla versione 9.0 di Wine; la versione osservata sulla macchina era `wine-9.0 (Ubuntu 9.0~repack-4build3)`, quindi al limite inferiore accettabile e proveniente dai repository della distribuzione.
