@@ -108,6 +108,42 @@ Il caso reale da cui questa scheda nasce è EASE Focus 3.1.260, dove il framewor
 
 [^gdi]: *GDI+*, Graphics Device Interface Plus - il sottosistema grafico di Windows per il disegno bidimensionale, le immagini e i caratteri; Wine ne fornisce una reimplementazione libera, che è sufficiente per la gran parte dei programmi e non per tutti.
 
+## Guidare l'interfaccia di un programma Wine da remoto, sotto una sessione Wayland
+
+Non è un guasto di Wine ma un limite dell'ambiente, e sta qui perché è qui che lo si cerca: quando una verifica si fa soltanto dentro l'interfaccia di un programma e chi lavora è collegato via SSH, serve un modo di cliccare e di leggere ciò che compare.
+
+Lo strumento naturale è `xdotool`, che su una sessione X11 fa entrambe le cose. Sotto Wayland non funziona, e il modo in cui non funziona è la parte insidiosa: le interrogazioni rispondono tutte come previsto, cioè la finestra risulta attivata, il puntatore risulta spostato alle coordinate chieste e il nome della finestra attiva è quello giusto, mentre clic e tasti non producono alcun effetto e nessun errore. Un fallimento che riporta successo costa più di uno che riporta errore.
+
+La causa è che le finestre di Wine vivono dentro XWayland, e sotto Wayland l'input reale lo governa il compositore e non il server X: `XTEST` modifica lo stato interno di XWayland, che non è ciò da cui i client ricevono gli eventi. Il modo di accertarlo in un comando è chiedere al server quali estensioni dichiara.
+
+```bash
+DISPLAY=:0 xdpyinfo | grep -E "XWAYLAND|XTEST"
+```
+
+Se compare `XWAYLAND`, l'iniezione non arriverà, e non c'è combinazione di opzioni che lo aggiri: sono state provate quattro forme, cioè il clic, la barra spaziatrice, l'acceleratore della finestra e l'invio diretto con `XSendEvent` invece che con `XTEST`, e nessuna ha avuto effetto.
+
+La via che funziona è dare al programma un server X privato, dove non esiste alcun compositore a possedere l'input. `Xvfb` è un server X senza schermo fisico, e lì dentro `XTEST` è l'unica sorgente di input che esista.
+
+```bash
+sudo apt install -y xdotool xvfb
+```
+
+```bash
+setsid nohup Xvfb :9 -screen 0 1680x1050x24 > /tmp/xvfb.log 2>&1 < /dev/null & disown
+```
+
+```bash
+setsid nohup env DISPLAY=:9 WINEPREFIX=$HOME/wineprefixes/<nome> wine "C:/percorso/programma.exe" > /tmp/programma.log 2>&1 < /dev/null & disown
+```
+
+Da quel momento `xdotool` con `DISPLAY=:9` clicca e scrive davvero, e `import` cattura le finestre per la verifica. Quattro cose vanno sapute prima, perché su quel display non gira alcun gestore di finestre e perché due trappole sono costate tempo sul campo.
+
+Le finestre non hanno barra del titolo e non si spostano trascinandole, ma `xdotool windowmove` le sposta, e serve davvero: una finestra di dialogo può nascere parzialmente fuori dallo schermo, con i pulsanti in basso invisibili finché non la si sposta. Il fuoco della tastiera segue il puntatore, quindi prima di premere un tasto il puntatore va portato sopra la finestra a cui il tasto è destinato. Gli acceleratori da tastiera dei programmi sono incostanti, mentre i clic sulle voci di menu non falliscono, quindi conviene guidare con il mouse e riservare la tastiera al solo testo, verificando ogni volta con l'elenco delle finestre che quella attesa sia comparsa prima di agire su di essa. E un comando che termina il programma per nome della riga di comando uccide la propria shell, perché il confronto avviene sull'intera riga e quella della shell contiene il nome cercato: la forma che funziona sottrae la coincidenza, per esempio `pkill -f "Programma[.]exe"` invece di `pkill -f "Programma.exe"`, e il sintomo del difetto è un comando che non produce alcuna uscita e non fa nulla.
+
+L'avvio con `setsid` e la chiusura dello standard input non sono pignoleria: un processo avviato con il solo `&` da una sessione SSH non sopravvive alla chiusura della sessione, e il sintomo è un server o un programma che risulta partito e non c'è più al comando successivo.
+
+Il caso reale da cui questa scheda nasce è la verifica in interfaccia di EASE Focus, raccontata in MS-111.
+
 ## Provenienza dei pacchetti e stabilità
 
 I repository di Ubuntu dividono Wine in pacchetti separati e non sempre offrono la versione più recente. Per stabilità, in particolare sul supporto a .NET che è la dipendenza critica di tutti i programmi di questo progetto, il repository ufficiale di WineHQ è preferibile. Su Ubuntu Studio conviene assicurarsi di essere almeno alla versione 9.0 di Wine; la versione osservata sulla macchina era `wine-9.0 (Ubuntu 9.0~repack-4build3)`, quindi al limite inferiore accettabile e proveniente dai repository della distribuzione.
