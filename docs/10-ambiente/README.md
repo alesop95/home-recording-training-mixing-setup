@@ -44,6 +44,8 @@ L'inventario verificato del corredo software `Progetto stanza`, con il formato r
 
 I guasti già incontrati e la loro risoluzione stanno in [wine-troubleshooting.md](wine-troubleshooting.md).
 
+L'allestimento di Veeam Agent for Linux, con la scelta fra le due varianti che decide che tipo di backup la macchina potrà fare, le verifiche preliminari, le trappole incontrate e le alternative quando il backup a livello di volume non è disponibile, sta in [veeam-agent-linux.md](veeam-agent-linux.md). È una pagina prescrittiva, estratta dai microstep da MS-117 a MS-122 perché rifare la cosa non richieda di rileggerne il racconto, ed è scritta per essere riusabile anche fuori da questo progetto.
+
 [^1]: *SSD*, Solid State Drive - unità di memorizzazione a stato solido, senza parti in movimento, con tempi di accesso molto inferiori a quelli di un disco meccanico.
 
 [^2]: *LTS*, Long Term Support - designazione delle versioni di Ubuntu con supporto esteso, rilasciate ogni due anni ad aprile, contrapposte alle versioni intermedie a supporto breve.

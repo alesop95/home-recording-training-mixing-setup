@@ -666,14 +666,16 @@ Un punto che era da provare e ora è provato: il servizio di database è un serv
 
 ARTA non era nel piano originale e si aggiunge, perché è la via più diretta per produrre un file GLL da un diffusore misurato, quindi serve alla fase 8 del progetto, quando il monitor autocostruito esiste e va caratterizzato. Fino a quel momento resta inutilizzato: la misura la fa REW, che è nativo.
 
-È shareware, e senza registrazione funziona in modalità dimostrativa con limitazioni da verificare al momento dell'uso, tracciate come punto aperto.
+È shareware, e il limite della modalità dimostrativa è stato misurato il 2026-09-15 invece di restare un punto aperto: il programma è pienamente funzionante tranne che per il caricamento e il salvataggio dei file, come dichiarano concordi la finestra di avvio e il file `Readme.txt`. La conseguenza è seria e va conosciuta prima di contarci: produrre un GLL è un salvataggio, quindi il ruolo che questa procedura assegna ad ARTA non è esercitabile senza licenza. La decisione su come produrre il GLL del monitor è tracciata come PA-014 e si prende alla fase 8, non adesso. Il racconto è in MS-116.
 
 ```bash
 cd ~/electroacoustics/progetto-stanza/diy/Arta
 WINEPREFIX=~/wineprefixes/arta64 wine ArtaSetup171.exe
 ```
 
-Un avvertimento sull'uso: ARTA è un programma di misura e vuole accedere alla scheda audio, e sotto Wine quell'accesso passa dal driver audio di Wine verso PipeWire, con latenza e stabilità che non sono quelle di un programma nativo. Per produrre un GLL da misure già acquisite il problema non si pone, perché si lavora su file. Per una misura dal vivo si usa REW, che è nativo.
+L'installazione, eseguita il 2026-09-15, non ha riservato sorprese: installatore Inno Setup come quello di VituixCAD, destinazione predefinita `C:\Program Files (x86)\ArtaSoftware` accettata per non rompere il disinstallatore, prefix da 1,6 GB. Ciò che si installa sono tre programmi e non uno, e la distinzione serve perché il nome ARTA li copre tutti: `Arta.exe` per la risposta all'impulso e l'analisi di spettro, `Steps.exe` per la risposta in frequenza a sinusoide a gradini, `Limp.exe` per l'impedenza e i parametri del diffusore.
+
+Un avvertimento sull'uso, che resta non verificato e non va scambiato per risolto: ARTA è un programma di misura e vuole accedere alla scheda audio, e sotto Wine quell'accesso passa dal driver audio di Wine verso PipeWire, con latenza e stabilità che non sono quelle di un programma nativo. Il primo avvio dice che l'interfaccia grafica funziona e non dice nulla su questo, che si potrà provare soltanto quando l'interfaccia audio di PA-012 esisterà. Per produrre un GLL da misure già acquisite il problema non si pone, perché si lavora su file. Per una misura dal vivo si usa REW, che è nativo.
 
 ### 8.8 Ramsete 27b, solo se la licenza lo consente
 
