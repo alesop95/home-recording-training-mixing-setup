@@ -34,6 +34,8 @@ La riduzione di quella procedura a ciò che serve avere sotto gli occhi davanti 
 
 La differenza concettuale fra Wine, un emulatore e una macchina virtuale, che è il punto da cui dipende tutto il resto della configurazione, sta in [wine-vs-emulatore.md](wine-vs-emulatore.md).
 
+La forma dell'ambiente che ne risulta, cioè quali strati lo compongono, che cosa sia davvero un prefix, in quali due modi Wine esegue un programma a 32 bit e dove vive ogni pezzo sul disco, sta in [architettura-ambiente-wine.md](architettura-ambiente-wine.md). È la pagina da leggere per capire perché l'ambiente funziona, con i diagrammi dei quattro strati e dei due modi di esecuzione, la mappa dei percorsi e i quattro comandi con cui si verifica che l'architettura sia davvero quella descritta. Non è una procedura e non sostituisce quelle che seguono.
+
 Il modello dei prefix, la scelta fra 32 e 64 bit e il comportamento delle licenze legate alla macchina stanno in [wine-prefix-e-dipendenze.md](wine-prefix-e-dipendenze.md).
 
 La procedura di pulizia, installazione e configurazione di Wine sta in [wine-configurazione.md](wine-configurazione.md).
