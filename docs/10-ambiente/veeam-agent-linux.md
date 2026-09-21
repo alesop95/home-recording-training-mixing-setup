@@ -176,6 +176,8 @@ Restano invariabili, e vale saperlo perché toglie decisioni inutili: il nome de
 
 Questa sezione è la procedura replicabile, cioè i soli comandi nell'ordine in cui vanno eseguiti, con una riga che dice che cosa ciascuno accerta. Le spiegazioni stanno nelle sezioni precedenti e nel troubleshooting più sotto: qui non si spiega, si esegue. Si presuppone che il blocco dei valori della sezione precedente sia stato eseguito nella stessa shell.
 
+Una nota sui privilegi, perché cambia quanto la procedura sia comoda e perché la voce B del troubleshooting diceva il contrario fino al 2026-09-21. I comandi che seguono portano `sudo`, ed è la forma che funziona sempre; da una sessione aperta dopo l'installazione del pacchetto, però, `sudo` non serve, perché l'installazione aggiunge l'utente al gruppo `veeam` e il binario appartiene a quel gruppo. La differenza conta nella pratica, perché senza `sudo` l'intera sequenza, compresi l'avvio del lavoro e il montaggio del punto, si esegue da una sessione SSH non interattiva, quindi si automatizza; con `sudo` serve un terminale dove digitare una password.
+
 ### Fase 0, accertare i presupposti
 
 Il tipo di volumi decide se il livello di volume sia possibile, e va letto prima di installare qualunque cosa.
@@ -364,6 +366,26 @@ ssh studio "sha256sum '/home/veeam-repo/<NOME-CARTELLA-DEL-DEPOSITO>/<NOME-FILE>
 sha256sum "<DESTINAZIONE>/<NOME-FILE>"
 ```
 
+### Fase 8, la corsa successiva, e la sola decisione che porta con sé
+
+Dalla seconda corsa in avanti le fasi da 0 a 4 non si rifanno, perché deposito e lavoro esistono già. Restano la fase 5 per eseguire, la 6 per rileggere e la 7 per portare fuori, identiche. Cambia una cosa sola, ed è una decisione che conviene prendere invece di ereditarla dal comando.
+
+Senza opzioni, il lavoro produce un punto incrementale che dipende dal pieno precedente. Con l'opzione seguente produce un pieno nuovo e indipendente, che costa altrettanto spazio del primo e non eredita alcuna dipendenza.
+
+```bash
+veeamconfig job start --name "$NOME_LAVORO" --activeFull
+```
+
+Il criterio per scegliere non è lo spazio ma che cosa fotografa il punto precedente. Se il primo pieno ritrae uno stato che qualcuno vorrebbe davvero ripristinare, l'incrementale è la scelta economica e corretta. Se ritrae uno stato intermedio che nessuno vuole più, far dipendere il punto utile da quello inutile aggiunge una superficie di guasto senza aggiungere valore, e allora il pieno indipendente è la scelta giusta. Va inoltre ricordato che un punto incrementale non si porta fuori da solo: senza il pieno da cui dipende non ripristina nulla, quindi la copia esterna resta una catena e non un file.
+
+Il numero di punti conservati è quello dichiarato alla creazione del lavoro con `--maxPoints`, e vale anche qui: con due punti e un pieno nuovo, il pieno precedente resta finché una terza corsa non lo espelle.
+
+Un controllo che chiude la corsa e costa un comando: i punti si elencano con il proprio tipo, e un pieno indipendente compare come `Full` e non come `Increment`.
+
+```bash
+veeamconfig point list --backupId {IDENTIFICATIVO-DEL-BACKUP}
+```
+
 ## Troubleshooting: sintomo, causa, rimedio
 
 Ogni voce nasce da un caso osservato su una macchina reale e non da una previsione. L'ordine è quello in cui i casi si incontrano percorrendo la sequenza.
@@ -378,7 +400,11 @@ Va saputo che l'accettazione non sopravvive a una purga dei pacchetti, quindi qu
 
 ### B, `veeamconfig: Permission denied` da utente normale
 
-Sintomo: qualunque sottocomando, compreso `--help`, risponde con un rifiuto di permesso. Causa: `veeamconfig` e `veeam` sono collegamenti simbolici allo stesso binario `/usr/sbin/veeamworker`, che ha permessi `-rwxr-x---` e appartiene a `root:veeam`; il rifiuto arriva dal filesystem prima che il programma parta, ed è per questo che il messaggio è quello della shell. Rimedio: nessuno, è il comportamento voluto. Ogni passo è lavoro privilegiato, e nemmeno l'aiuto si legge senza `sudo`.
+Sintomo: qualunque sottocomando, compreso `--help`, risponde con un rifiuto di permesso. Causa: `veeamconfig` e `veeam` sono collegamenti simbolici allo stesso binario `/usr/sbin/veeamworker`, che ha permessi `-rwxr-x---` e appartiene a `root:veeam`; il rifiuto arriva dal filesystem prima che il programma parta, ed è per questo che il messaggio è quello della shell.
+
+Il rimedio, corretto il 2026-09-21 dopo averlo misurato. Una versione precedente di questa voce diceva che rimedio non ce n'era e che ogni passo fosse lavoro privilegiato: è falso, e va ritirato. Il gruppo `veeam` esiste proprio per questo, l'installazione del pacchetto vi aggiunge l'utente, e da una sessione che lo porta il binario si esegue senza `sudo`. Misurato su `alessio-ubuntustudio` da una sessione SSH ordinaria: l'elenco dei depositi, quello dei lavori, l'avvio del lavoro con `--activeFull`, il montaggio del punto di ripristino e la chiusura della sessione di montaggio riescono tutti con stato zero e senza privilegi.
+
+Il motivo per cui la voce era stata scritta così merita di restare, perché è lo stesso della quarta causa della regola sul contesto di shell e della prima causa di MS-146. Il gruppo viene aggiunto dall'installazione del pacchetto, ma un processo riceve i propri gruppi quando la sessione nasce e non li rilegge mai più: la sessione da cui si installa non li ha, e continua a non averli finché resta aperta. Non è quindi vero che serva `sudo`, è vero che serve una sessione nuova. Dove non si voglia o non si possa aprirla, `sudo` resta la via che funziona subito, ed è la ragione per cui i comandi della sequenza qui sopra lo portano.
 
 Un modo di misurare male questo caso merita una riga, perché costa tempo. Passando l'uscita a un altro comando, per esempio `head`, lo stato restituito è quello dell'ultimo elemento della pipeline e non quello di `veeamconfig`, quindi `$?` risponde zero mentre il comando è fallito. Eseguito da solo, lo stato è `126`, che in una shell POSIX significa esattamente comando trovato ma non eseguibile.
 
