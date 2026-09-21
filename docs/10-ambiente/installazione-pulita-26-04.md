@@ -827,6 +827,8 @@ L'indirizzo `192.168.10.204` arriva da DHCP e potrebbe cambiare. Su una macchina
 
 ## Fase 11: verifica finale e chiusura
 
+> *Eseguita il 2026-09-21.* L'esito, con il confronto voce per voce, i tre scarti non attesi e le voci di troubleshooting nate durante l'esecuzione, sta in [fotografia-macchina-post-reinstall.md](fotografia-macchina-post-reinstall.md). Il racconto per intervento è nei microstep da MS-144 a MS-146.
+
 Il controllo di uscita dell'intera procedura è la ripetizione della fotografia della fase 0 sul sistema nuovo, e il confronto delle due.
 
 ```bash
@@ -840,14 +842,16 @@ aplay -l > 07-audio-out.txt 2>&1
 arecord -l > 08-audio-in.txt 2>&1
 apt-mark showmanual > 11-pacchetti-manuali.txt 2>&1
 wine --version > 12-wine.txt 2>&1
-find ~/wineprefixes -maxdepth 2 -name "system.reg" -printf "%h\n" > 13-prefix-wine.txt 2>&1
+find ~ -maxdepth 3 -name "system.reg" -printf "%h\n" | sort > 13-prefix-wine.txt 2>&1
 uname -a > 14-kernel.txt 2>&1
 dpkg --print-foreign-architectures > 15-architetture.txt 2>&1
 ```
 
-Il confronto atteso, voce per voce. Il sistema passa da 25.04 a 26.04. La direttiva di aggiornamento resta `Prompt=lts`, ma ora su una base che ne trae vantaggio. Le partizioni sono le stesse quattro, con `/home` invariata negli identificativi univoci. I dispositivi audio sono visti come prima. I prefix Wine sono quattro e nuovi, invece del prefix di default sedimentato. L'elenco delle architetture straniere è vuoto, mentre prima conteneva `i386`. I pacchetti installati manualmente sono meno di prima, perché l'ambiente è ricostruito con l'essenziale.
+Il confronto atteso, voce per voce. Il sistema passa da 25.04 a 26.04. La direttiva di aggiornamento resta `Prompt=lts`, ma ora su una base che ne trae vantaggio. Le partizioni sono le stesse quattro, con `/home` invariata negli identificativi univoci. I dispositivi audio sono visti come prima. I prefix Wine sono quattro e nuovi, invece del prefix di default sedimentato. L'elenco delle architetture straniere contiene ancora `i386`, e qui una previsione di questa pagina va ritirata invece di essere cancellata: diceva che sarebbe stato vuoto, perché fu scritta prima di ADR-016, quando si credeva che l'architettura a 32 bit fosse un residuo da non ricreare. ADR-016 ha stabilito il contrario per misura, e MS-141 lo ha rafforzato. I pacchetti installati manualmente sono meno di prima, perché l'ambiente è ricostruito con l'essenziale.
 
 E il controllo che conta più di tutti: Akabak si apre, accetta lo stesso Release Code, e VACS non ne chiede un secondo.
+
+Due avvertenze nate dalla prima esecuzione, entrambe capaci di produrre una lettura sbagliata su dati veri. Il censimento dei prefix va fatto con un limite di profondità pari a tre e non a due, perché i prefix del corredo vivono dentro una cartella comune e il loro file di registro sta un livello più in basso di quanto la forma originaria di questo comando assumesse; con il limite stretto il comando risponde senza errori elencandone un sottoinsieme. E la voce sulla catena audio non si raccoglie da una sessione SSH: PipeWire riporta l'assenza di schede anche su una macchina funzionante quando la sessione grafica dell'utente non è quella attiva del posto, quindi quella verifica si esegue dalla console.
 
 ## Se qualcosa va storto
 
