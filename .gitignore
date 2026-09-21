@@ -41,3 +41,30 @@ desktop.ini
 # Privati
 CLAUDE.local.md
 .claude/settings.local.json
+
+# LaTeX: il .tex e' la fonte, gli ausiliari sono derivati e non si versionano in
+# nessuna cartella. Aggiunto il 2026-09-21 con l'istanziazione del pacchetto latex.
+*.aux
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.nav
+*.snm
+*.vrb
+
+# Il PDF generato non entra come pattern globale: in questo file *.pdf e' gia'
+# globale e la questione va risolta insieme all'ancoraggio dei pattern per tipo,
+# che e' una decisione aperta e non una conseguenza dell'istanziazione di LaTeX.
+
+# Negazione minima: il pacchetto latex istanzia tex-packages.txt alla radice, dove
+# il pattern globale *.txt lo nasconderebbe. Questa riga riguarda la sola copia
+# istanziata; la copia modello sotto .claude/templates/ resta nascosta, ed e' il
+# difetto piu' ampio misurato il 2026-09-21 e lasciato alla decisione dell'utente.
+!/tex-packages.txt
