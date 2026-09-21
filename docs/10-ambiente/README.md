@@ -50,6 +50,8 @@ I guasti già incontrati e la loro risoluzione stanno in [wine-troubleshooting.m
 
 L'allestimento di Veeam Agent for Linux, con la scelta fra le due varianti che decide che tipo di backup la macchina potrà fare, le verifiche preliminari, le trappole incontrate e le alternative quando il backup a livello di volume non è disponibile, sta in [veeam-agent-linux.md](veeam-agent-linux.md). È una pagina prescrittiva, estratta dai microstep da MS-117 a MS-122 perché rifare la cosa non richieda di rileggerne il racconto, ed è scritta per essere riusabile anche fuori da questo progetto.
 
+La verifica della catena audio, cioè come si stabilisce che la macchina sia capace di riprodurre suono in modo utilizzabile per un lavoro di elettroacustica, sta in [catena-audio-pipewire.md](catena-audio-pipewire.md). È una pagina prescrittiva in otto fasi, estratta dai microstep MS-146, MS-154, MS-155 e MS-156, e la sua parte che vale oltre questa macchina sono i tre assi che decidono se una misura audio abbia valore, cioè quale sessione tenga il posto, quanto sia vecchio il processo di gestione audio rispetto alle modifiche ai gruppi, e se i jack siano occupati. Tutte e tre hanno già prodotto qui una misura vacua, cioè un esito che non informava né in positivo né in negativo mentre sembrava farlo.
+
 [^1]: *SSD*, Solid State Drive - unità di memorizzazione a stato solido, senza parti in movimento, con tempi di accesso molto inferiori a quelli di un disco meccanico.
 
 [^2]: *LTS*, Long Term Support - designazione delle versioni di Ubuntu con supporto esteso, rilasciate ogni due anni ad aprile, contrapposte alle versioni intermedie a supporto breve.
