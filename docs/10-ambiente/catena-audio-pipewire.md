@@ -174,7 +174,7 @@ wpctl get-volume @DEFAULT_AUDIO_SINK@
 amixer -c 0 scontents
 ```
 
-Del secondo si guardano i soli controlli stereo di riproduzione, verificando che i due canali riportino lo stesso valore su ciascuno. Un controllo a zero e disattivato non è un guasto e non va scambiato per tale: è una uscita silenziata a livello di mixer, e sulla macchina di riferimento è il caso del controllo del pannello frontale mentre si usa l'uscita di linea posteriore.
+Del secondo si guardano i soli controlli stereo di riproduzione, verificando che i due canali riportino lo stesso valore su ciascuno. Un controllo a zero e disattivato è una uscita silenziata a livello di mixer, e sulla macchina di riferimento è il caso del controllo del pannello frontale mentre si usa l'uscita di linea posteriore.
 
 ### Fase 8, lo stato conservato su disco, che dice se una scelta esista
 

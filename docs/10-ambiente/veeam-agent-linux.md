@@ -246,7 +246,7 @@ sudo veeamconfig repository create --name "$NOME_DEPOSITO" --location "$DEPOSITO
 sudo veeamconfig repository list
 ```
 
-Il secondo comando non è una formalità: è l'unica misura che distingue un deposito registrato da una cartella con il nome giusto, e la differenza conta dopo ogni ciclo di purga e reinstallazione, come dice la voce E del troubleshooting.
+Il secondo comando è l'unica misura che distingue un deposito registrato da una cartella con il nome giusto, e la differenza conta dopo ogni ciclo di purga e reinstallazione, come dice la voce E del troubleshooting.
 
 ### Fase 4, creare il lavoro
 

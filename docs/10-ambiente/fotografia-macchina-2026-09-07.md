@@ -75,7 +75,7 @@ Lo schema è quello previsto, cioè quattro partizioni con `/home` separata, ma 
 | `nvme0n1p3` | swap | - | - | `[SWAP]` | `50a4c66e-...` |
 | `nvme0n1p4` | ext4 | 369 GB | 3,7 GB, 2 per cento | `/home` | `4aa5afff-...` |
 
-Il primo scarto è la partizione EFI, che il documento sorgente indicava intorno ai 100 MB e che in realtà è di 1,1 GB, con 6,2 MB occupati. Non è un problema, è spazio sovradimensionato e inerte, ma va corretto nella documentazione perché una procedura di reinstallazione scritta su un valore sbagliato porterebbe a cercare una partizione che non corrisponde.
+Il primo scarto è la partizione EFI, che il documento sorgente indicava intorno ai 100 MB e che in realtà è di 1,1 GB, con 6,2 MB occupati. È spazio sovradimensionato e inerte, che non disturba nulla, ma va corretto nella documentazione perché una procedura di reinstallazione scritta su un valore sbagliato porterebbe a cercare una partizione che non corrisponde.
 
 Il secondo scarto è più interessante per la decisione da prendere: `/home` è di 369 GB e ne usa 3,7, cioè il 2 per cento. La separazione di `/home` che rende la reinstallazione a basso rischio esiste ed è quella prevista, ma il volume di dati da proteggere è modesto. Su root ci sono 46 GB liberi su 73.
 
@@ -201,7 +201,7 @@ La voce più critica della fase 0 è chiusa con esito positivo. Il disco non va 
 
 La domanda se il comando si possa lanciare via SSH da Windows ha una risposta in due parti, e la distinzione conta.
 
-Via SSH si può, e funziona. Ciò che non funziona è eseguirlo dallo strumento di shell dell'agente, perché quella shell non ha input interattivo: `sudo` chiede la password su un terminale, e senza terminale non c'è modo di fornirla. La connessione dell'agente usa inoltre `BatchMode=yes`, che disabilita di proposito ogni richiesta interattiva. Non è un limite della rete né della chiave: è un limite di canale.
+Via SSH si può, e funziona. Ciò che non funziona è eseguirlo dallo strumento di shell dell'agente, perché quella shell non ha input interattivo: `sudo` chiede la password su un terminale, e senza terminale non c'è modo di fornirla. La connessione dell'agente usa inoltre `BatchMode=yes`, che disabilita di proposito ogni richiesta interattiva. È un limite del canale, mentre rete e chiave sono in ordine.
 
 Le strade sono tre, e hanno costi diversi.
 

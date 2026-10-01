@@ -16,7 +16,7 @@ La prima ipotesi di lavoro era che un aggiornamento fosse stato tentato e fosse 
 
 La scelta fra aggiornamento in posto e installazione pulita è stata quindi ripresa da zero e decisa per installazione pulita, con ADR-011 che rivede ADR-006 e ADR-013 che la riconferma. Le ragioni che hanno tenuto sono tre. L'ambiente aveva accumulato attrito reale, cioè due repository WineHQ attivi contemporaneamente per due rilasci diversi di Ubuntu, `wine-stable 3.0.1` del 2018 accanto a `wine 9.0`, una sorgente `file:/cdrom/` residua e un solo prefix Wine condiviso da tutto. Il salto da un rilascio intermedio fuori supporto a una LTS attraversa comunque una ricostruzione dell'ambiente. E il rischio dell'installazione pulita era circoscrivibile a un solo punto, la selezione delle partizioni, contro un rischio diffuso e non circoscrivibile nell'aggiornamento di un sistema in quello stato.
 
-Da questa decisione discende la forma di tutto il resto del setup, ed è il punto in cui la ratio va capita invece che eseguita: *si azzera la radice e si conserva `/home`*. Non è una via di mezzo per risparmiare tempo, è la separazione che rende il rischio circoscrivibile. La radice contiene solo sistema e programmi, cioè cose riproducibili da un installatore e da `apt`; `/home` contiene i progetti, i materiali trasferiti e i prefix Wine, cioè cose che nessun comando ricostruisce. Tutte le cautele della procedura si concentrano perciò su una singola casella di spunta.
+Da questa decisione discende la forma di tutto il resto del setup, ed è il punto in cui la ratio va capita invece che eseguita: *si azzera la radice e si conserva `/home`*. È la separazione che rende il rischio circoscrivibile. La radice contiene solo sistema e programmi, cioè cose riproducibili da un installatore e da `apt`; `/home` contiene i progetti, i materiali trasferiti e i prefix Wine, cioè cose che nessun comando ricostruisce. Tutte le cautele della procedura si concentrano perciò su una singola casella di spunta.
 
 ## Le decisioni che hanno dato forma al setup
 
@@ -191,7 +191,7 @@ La fase 7 ha prodotto più correzioni documentali che comandi, e tutte e tre del
 
 La prima è stata intercettata prima di consegnare i comandi, verificando i nomi dei pacchetti sulla macchina invece di fidarsi della procedura. Il pacchetto prescritto, `wine-stable`, su Ubuntu 26.04 non esiste: `apt-cache policy` risponde `Candidate: (none)`, perché quel nome appartiene ai repository WineHQ che il sistema precedente aveva attivi. Il pacchetto dell'archivio si chiama `wine`. È MS-081.
 
-Lo stesso controllo ha dato una conferma non cercata dell'ordine imposto da ADR-016: prima di dichiarare l'architettura, `apt-cache policy wine32` risponde `Candidate: (none)` mentre `wine64` risponde con la versione. Non è un pacchetto mancante, è l'architettura non ancora abilitata.
+Lo stesso controllo ha dato una conferma non cercata dell'ordine imposto da ADR-016: prima di dichiarare l'architettura, `apt-cache policy wine32` risponde `Candidate: (none)` mentre `wine64` risponde con la versione. È il segno dell'architettura non ancora abilitata, e il pacchetto esiste.
 
 ```bash
 sudo dpkg --add-architecture i386 && dpkg --print-foreign-architectures

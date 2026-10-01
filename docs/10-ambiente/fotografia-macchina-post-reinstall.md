@@ -171,7 +171,7 @@ La seconda è che il processo `wireplumber` di quella sessione gira con l'insiem
 
 Ciò che questo accertamento dimostra e ciò che non dimostra vanno separati, perché confonderli produrrebbe un allarme falso. Dimostra che la catena audio non si verifica da una sessione SSH mentre il posto è tenuto dallo schermo di accesso, e che una misura fatta così riporta l'assenza di schede anche su una macchina perfettamente funzionante. Non dimostra che la catena audio sia guasta: nessuna delle due cause riguarda la configurazione del sistema, ed entrambe cadono con un accesso nuovo alla console, che riattiva la sessione e le assegna i gruppi correnti. La verifica vera resta da fare in quella forma, ed è tracciata come PA-019.
 
-La lezione generale è la stessa di MS-093, dove si scoprì che Wine non trova un display da una sessione SSH, e conviene enunciarla una volta per tutte in forma che copra entrambi i casi. Una sessione remota non è una finestra sulla macchina: è una sessione diversa, con un proprio ambiente, propri gruppi e nessun posto assegnato, e tutto ciò che dipende dalla sessione grafica va misurato da quella e non da questa.
+La lezione generale è la stessa di MS-093, dove si scoprì che Wine non trova un display da una sessione SSH, e conviene enunciarla una volta per tutte in forma che copra entrambi i casi. Una sessione remota è una sessione diversa da quella grafica, con un proprio ambiente, propri gruppi e nessun posto assegnato, e tutto ciò che dipende dalla sessione grafica va misurato da quella e non da questa.
 
 ### Un comando di censimento copiato alla lettera misurava meno di quanto dichiarasse
 

@@ -14,7 +14,7 @@ Questo è il pattern da riconoscere: non un pacchetto mancante, ma un prefix cre
 
 ## Errore: could not load kernel32.dll, status c0000135
 
-La libreria `kernel32.dll` è una delle librerie di base di Windows, e Wine la fornisce dentro il prefix. Quando non riesce a caricarla il problema non è quasi mai la libreria in sé: è che l'installazione di Wine è incompleta oppure che il prefix non è coerente con essa.
+La libreria `kernel32.dll` è una delle librerie di base di Windows, e Wine la fornisce dentro il prefix. Quando non riesce a caricarla il problema quasi sempre è un'installazione di Wine incompleta oppure un prefix non coerente con essa, e quasi mai la libreria in sé.
 
 Due cause distinte, che vale separare perché hanno cure diverse.
 

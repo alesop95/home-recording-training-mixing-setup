@@ -6,7 +6,7 @@
 
 ## PA-001 - Valutare l'acquisto di una scheda audio per l'home recording
 
-Data di apertura: 2026-09-07. Stato: **aperta, da valutare**.
+Data di apertura: 2026-09-07. Stato: **aperta, valutazione scritta il 2026-09-30, scelta dell'utente attesa**. Il confronto dei candidati è in `docs/20-catena-di-ingresso.md`; la stessa voce nel progetto `diy-2way-monitors-home` è PA-012, che porta i requisiti dichiarati il 2026-09-21, cioè otto ingressi, almeno un ingresso ad alta impedenza e nessun tetto di spesa.
 
 Che cosa va fatto. Una ricerca di mercato e una scelta di acquisto per l'interfaccia audio di questo progetto, con i criteri dichiarati prima dei modelli e non dopo.
 

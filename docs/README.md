@@ -24,6 +24,10 @@ La diagnosi del blocco di aggiornamento e la raccomandazione di una installazion
 
 La parte su Wine è meno pertinente qui, perché i programmi Windows che richiede sono simulatori acustici e non strumenti di registrazione. Resta comunque parte del blocco, sia perché descrive lo stato reale della macchina, sia perché la pagina sulla differenza fra Wine, un emulatore e una macchina virtuale è la spiegazione da leggere se un domani servisse far girare qui un plugin o uno strumento solo-Windows.
 
+## La catena di ingresso
+
+La pagina [20-catena-di-ingresso.md](20-catena-di-ingresso.md) è la valutazione dei candidati per l'interfaccia audio, scritta il 2026-09-30 come ricerca documentale: tre topologie, cioè interfaccia multicanale, mixer analogico e mixer digitale che fa da interfaccia, più i moduli di batteria con audio USB multitraccia, con la conformità alla classe verificata su fonte primaria dove esiste e tutte le fonti dichiarate come lette o soltanto elencate. La scelta resta dell'utente.
+
 ## Azioni differite
 
 Le decisioni e gli impegni di questo progetto che dipendono da una condizione esterna stanno in [PENDING-ACTIONS.md](PENDING-ACTIONS.md). La prima voce, e al momento l'unica, è la valutazione dell'acquisto di una interfaccia audio: la Focusrite Scarlett 2i2 attualmente disponibile ha due ingressi, che bastano al progetto dei monitor ma sono il vincolo principale per la registrazione multitraccia, che è lo scopo di questo progetto. La voce fissa i criteri da stabilire prima di guardare i modelli, fra cui il supporto su Linux, che a questo scopo non è un dettaglio.
