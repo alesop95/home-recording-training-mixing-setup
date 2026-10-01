@@ -813,17 +813,40 @@ Da quel momento la connessione è `ssh studio`, e gli strumenti di trasferimento
 
 Sulla macchina, per igiene, conviene poi disattivare l'autenticazione per password una volta che la chiave funziona, così che l'unico modo di entrare sia la chiave.
 
+> *Eseguita il 2026-10-01*, MS-178, dalla postazione Windows con `ssh -t studio`, dopo un primo tentativo fallito descritto nel troubleshooting in fondo alla pagina. La forma eseguita non modifica `sshd_config`, ma aggiunge un file di una riga in `sshd_config.d`, che `sshd_config` include alla riga 24, prima della riga 78 dove sta il valore commentato: in OpenSSH vale il primo valore letto, quindi il file aggiunto prevale, e il file principale resta quello del pacchetto.
+
+Sulla macchina, in un terminale della macchina stessa:
+
 ```bash
-sudo sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+echo PasswordAuthentication no | sudo tee /etc/ssh/sshd_config.d/10-solo-chiave.conf
 sudo sshd -t
 sudo systemctl restart ssh
+sudo sshd -T | grep -i ^passwordauthentication
 ```
 
-Il comando intermedio verifica la sintassi della configurazione prima del riavvio del servizio, e va eseguito sempre: riavviare `sshd` con una configurazione non valida su una macchina a cui si accede solo in rete è il modo classico di chiudersi fuori.
+Oppure dalla postazione Windows, in PowerShell, in una riga sola e senza virgolette doppie interne:
+
+```powershell
+ssh -t studio 'echo PasswordAuthentication no | sudo tee /etc/ssh/sshd_config.d/10-solo-chiave.conf && sudo sshd -t && sudo systemctl restart ssh && sudo sshd -T | grep -i ^passwordauthentication'
+```
+
+L'esito atteso sono due righe, `PasswordAuthentication no` scritta nel file e `passwordauthentication no` letta da `sshd`. Il controllo `sshd -t` verifica la sintassi prima del riavvio e va eseguito sempre: riavviare `sshd` con una configurazione non valida su una macchina a cui si accede solo in rete è il modo classico di chiudersi fuori. Il riavvio non chiude la sessione da cui lo si lancia.
+
+La verifica si fa dalla postazione nei due versi. Senza chiave il server deve offrire soltanto `publickey`:
+
+```powershell
+ssh -v -o BatchMode=yes -o PubkeyAuthentication=no -o PreferredAuthentications=password,keyboard-interactive studio true
+```
+
+Deve stampare `Authentications that can continue: publickey` e `Permission denied (publickey)`. Con la chiave deve entrare:
+
+```powershell
+ssh -o BatchMode=yes studio 'echo chiave accettata'
+```
 
 ### 10.4 Indirizzo stabile
 
-L'indirizzo `192.168.10.204` arriva da DHCP e potrebbe cambiare. Su una macchina che si raggiunge per nome dagli strumenti conviene fissarlo, con una prenotazione sul router basata sull'indirizzo MAC, che è la strada preferibile perché resta gestita in un punto solo, oppure con un indirizzo statico configurato sulla macchina.
+Rinviata il 2026-10-01 a quando la macchina sarà nella rete di casa, che è quella dove vivrà: la rete attuale è quella dell'azienda, e una prenotazione fatta qui resterebbe sul router sbagliato. La voce è PA-022. L'indirizzo `192.168.10.204` arriva da DHCP e potrebbe cambiare. Su una macchina che si raggiunge per nome dagli strumenti conviene fissarlo, con una prenotazione sul router basata sull'indirizzo MAC, che è la strada preferibile perché resta gestita in un punto solo, oppure con un indirizzo statico configurato sulla macchina.
 
 ## Fase 11: verifica finale e chiusura
 
@@ -855,10 +878,20 @@ Due avvertenze nate dalla prima esecuzione, entrambe capaci di produrre una lett
 
 ## Se qualcosa va storto
 
-Tre scenari e la risposta a ciascuno.
+Tre scenari dell'installazione e la risposta a ciascuno, più una voce di troubleshooting nata dall'esecuzione della fase 10.
 
 L'installazione non parte o si interrompe. Nulla è perduto perché `/home` non è stata toccata e la copia della fase 1.3 esiste. Si riprova, eventualmente riscrivendo la chiavetta dopo aver riverificato la somma di controllo dell'immagine.
 
 Il sistema si installa ma non avvia. È tipicamente un problema di avvio UEFI. Si riavvia dalla chiavetta in modalità live e si ripara il caricatore; la partizione EFI esistente e non formattata è un vantaggio in questo scenario, perché contiene ancora la voce di avvio precedente.
 
 `/home` è stata formattata per errore. È l'unico scenario davvero grave, e l'unica risposta è il ripristino dalla copia della fase 1.3. È anche la ragione per cui quella fase non è opzionale.
+
+### Troubleshooting della fase 10
+
+*A, `` sed: -e expression #1, char 52: unterminated `s' command `` lanciando il comando dalla postazione con `ssh -t`.* Caso incontrato il 2026-10-01 sulla postazione Windows, in Windows PowerShell 5.1, verso la macchina `alessio-ubuntustudio`.
+
+Sintomo. Dopo la password di `sudo`, `sed` termina con l'errore sopra e la connessione si chiude; i comandi successivi, legati con `&&`, non partono.
+
+Causa. Windows PowerShell 5.1, quando passa a un programma esterno come `ssh` una stringa fra apici singoli che contiene virgolette doppie, toglie le virgolette doppie interne. L'espressione `"s/^#*PasswordAuthentication.*/PasswordAuthentication no/"` arriva quindi alla shell della macchina senza virgolette, si spezza in due al primo spazio, e `sed` riceve un comando `s` senza la barra di chiusura.
+
+Rimedio. Usare una forma senza virgolette doppie interne, cioè quella della sottofase 10.3 con `tee` su un file di `sshd_config.d`, oppure incollare i comandi in un terminale della macchina stessa, dove PowerShell non c'è. Lo stato dopo l'errore va letto prima di ripetere: nel caso osservato il backup creato dal primo comando era identico all'originale e la riga 78 era ancora commentata, cioè nulla era cambiato.
