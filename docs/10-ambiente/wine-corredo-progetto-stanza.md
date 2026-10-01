@@ -151,7 +151,7 @@ Il dettaglio che fa perdere tempo se non lo si sa, già registrato nella pagina 
 
 Non si installa. È superata dalla 3.1.260, i GLL sono retrocompatibili, e tre versioni dello stesso programma in tre prefix sono manutenzione senza ritorno. Resta materiale d'archivio.
 
-### Ramsete 27b: da verificare prima di installare
+### Ramsete 27b: provenienza accertata, escluso per ADR-026
 
 Ramsete è il programma di acustica architettonica che il documento sorgente annotava come alternativa e mai valutava, lasciando la sezione vuota. L'ispezione dei file dice qualcosa in più, e va detto con precisione ciò che dice e ciò che non dice.
 
@@ -159,14 +159,16 @@ Il formato dell'installazione è il toolkit di distribuzione di Visual Basic 6, 
 
 Questo è precisamente il caso che il documento sorgente segnalava come problematico nei prefix a 64 bit: i runtime di Visual Basic 6 sono fra le librerie vecchie che non ci girano bene, e in quei casi serve un prefix a 32 bit. È la ragione dell'emendamento alla decisione sui prefix discusso nella sezione seguente.
 
-Sullo stato di licenza, l'onestà impone di dichiarare che non si sa. La cartella contiene soltanto i tre file dell'installazione originale, senza cartelle di modifica e senza file di gruppi di distribuzione illecita, quindi non ci sono indizi di manomissione. Ma Ramsete è un prodotto commerciale, e non è stato accertato se questa sia una versione dimostrativa liberamente distribuibile o una copia completa. La verifica va fatta prima di installarlo, non dopo, e la fonte è il sito del produttore.
+Sullo stato di licenza, fino al 2026-10-01 l'onestà imponeva di dichiarare che non si sapeva, e il paragrafo che segue è il ragionamento di allora; l'accertamento sta subito dopo. La cartella contiene soltanto i tre file dell'installazione originale, senza cartelle di modifica e senza file di gruppi di distribuzione illecita, quindi non ci sono indizi di manomissione. Ma Ramsete è un prodotto commerciale, e non è stato accertato se questa sia una versione dimostrativa liberamente distribuibile o una copia completa. La verifica va fatta prima di installarlo, non dopo, e la fonte è il sito del produttore.
 
-Se la verifica dà esito positivo, la procedura è la seguente.
+Accertamento del 2026-10-01, MS-173. La provenienza è dimostrata per impronta: i tre file presenti sulla macchina, in `~/electroacoustics/progetto-stanza/room/Ramsete27b - room acoustics` e nella copia sotto `~/archivio/Room acoustics/`, hanno le stesse impronte SHA-256 dei tre file contenuti in `Ramsete27b.zip`, che gli autori pubblicano fra le versioni vecchie del repository indicato come cartella di download dal sito ufficiale `ramsete.com`. Le impronte sono `setup.exe` 3d0041832e8b6f5b95cb33d286c24c53ccc9341549589ae8822c6084e8d2aa5c, `Ramsete27b.CAB` 34673fdcd18dcf1e49fe7531c455e325030f9bcc41e631bf466eaa2e65fe8377, `SETUP.LST` 1365d3f926a9b89669be759def3a97ad46f7e29774cdf6d1f177c7b5ba7c7723. La copia è quindi l'installatore originale distribuito dagli autori, e non la variante `Ramsete27_cracked.zip` che compare nella stessa cartella. Sul diritto d'uso le fonti dicono due cose: la versione completa richiede una chiave, un file `ramsete.key` o una chiave hardware, che si acquista tramite il distributore italiano Spectra; senza chiave i moduli funzionano in modalità dimostrativa con precisione ridotta e funzioni avanzate limitate, cioè come Ramsete Lite. La seconda affermazione è scritta per le versioni recenti; che valga identica per la 2.7b è plausibile e non verificato, perché il programma non è stato installato. Ne segue ADR-026: il programma resta escluso, perché la modalità dimostrativa ha una precisione ridotta che non serve a un calcolo di progetto, la versione completa è un acquisto, e il suo ruolo è coperto da Akabak.
+
+Se un giorno servisse installarlo, la procedura è la seguente, con il percorso reale della cartella. Non è mai stata eseguita: la versione precedente di questa pagina portava un percorso senza il suffisso ` - room acoustics`, quindi il `cd` sarebbe fallito.
 
 ```bash
 WINEARCH=win32 WINEPREFIX=~/wineprefixes/ramsete32 wine32 winecfg
 WINE=wine32 WINEPREFIX=~/wineprefixes/ramsete32 winetricks -q vb6run corefonts
-cd ~/electroacoustics/progetto-stanza/room/Ramsete27b
+cd "$HOME/electroacoustics/progetto-stanza/room/Ramsete27b - room acoustics"
 WINEPREFIX=~/wineprefixes/ramsete32 wine32 setup.exe
 ```
 
