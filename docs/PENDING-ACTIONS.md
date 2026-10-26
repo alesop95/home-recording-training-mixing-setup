@@ -43,3 +43,33 @@ Perché non è urgente. Sono modelli, cioè file che si copiano quando si istanz
 Il criterio di completamento. La verifica `--check` pulita anche in questo progetto, oppure la decisione motivata di non tenere allineata la copia del template qui, dato che il progetto principale ne conserva una corretta.
 
 Nota sulla relazione con l'altro progetto. Questa voce è parente di PA-003 del progetto principale, che riguarda quattro correzioni da propagare all'indietro verso `template-claude-developing`. Conviene trattarle insieme, perché la sorgente comune è la stessa e correggerla lì risolve entrambe le copie invece di rincorrerle una per una.
+
+## PA-003 - SoundCraft come DAW pilotabile dall'agente, e se serva un fork per Ubuntu Studio
+
+Data di apertura: 2026-10-26, da una sessione aperta nel progetto `home-lab-cybersec-networking`. Stato: aperta, in attesa di riallineamento con l'utente. La stessa voce, con le fonti per esteso, è PA-034 di `diy-2way-monitors-home`, nella cui pagina `docs/90-riferimenti/fonti.md` stanno i riferimenti, tutti letti il 2026-10-26.
+
+Che cosa va fatto. L'utente ha chiesto di fare un fork di SoundCraft, la DAW della suite ArtCraft, e di personalizzarlo per Ubuntu Studio. Poi ha indicato questo progetto e quello dei monitor come i diretti interessati, e ha chiesto una spiegazione prima del dettaglio della personalizzazione, che considera lo sviluppo più interessante.
+
+Che cosa si sa. Per usare il programma il fork non serve, perché upstream pubblica per Linux deb, tarball, AppImage e Flatpak, e il programma gira passando da ALSA e quindi da PipeWire. Serve per cambiare il codice. Upstream dichiara come blocco dell'alpha la mancanza di JACK e della verifica su Linux, il mix gira a blocchi fissi di 512 campioni, non c'è hosting LV2 e l'interscambio di sessioni AAF e OMF manca. Il README stima il programma a circa il 40% di un sostituto reale di Pro Tools. Per registrare, quindi, Ardour resta lo strumento maturo della macchina. Il valore di SoundCraft in questo progetto è altro: la CLI 0.10.0 espone 480 comandi e 27 plugin interni, e con la riga di comando e il server MCP l'agente può costruire sessioni di esercizio, ispezionarle, inserire plugin e fare i bounce. Per un progetto di formazione al missaggio è una capacità che Ardour non offre all'agente. Se si fa il fork, avrà un nome neutro, come ha scelto l'utente.
+
+Condizione di sblocco. Il riallineamento con l'utente su che cosa SoundCraft debba fare qui: esercizi di missaggio generati e corretti dall'agente, oppure una DAW di lavoro.
+
+Criterio di completamento. Una decisione documentata fra rilascio ufficiale e fork. Se si sceglie il fork, servono anche la prima milestone, che per le fonti lette è l'host JACK, e la verifica sulla macchina.
+
+## PA-004 - Sottoprogetto: analizzatore di spettro con Raspberry Pi Pico
+
+Data di apertura: 2026-10-26. Stato: proposto dall'utente come sottoprogetto, con la valutazione che segue, e in attesa della sua decisione.
+
+Che cosa è. Un articolo di Martin Ossmann pubblicato da Futuranet il 2026-10-15 e letto per intero il 2026-10-26 (`https://futuranet.it/progetti/2026/10/15/raspberry-pi-pico-come-analizzatore-di-spettro/`). Descrive un analizzatore di spettro costruito sull'ADC interno dell'RP2040, a 12 bit e fino a 500 kS/s. L'ingresso è portato a metà della tensione di alimentazione da due resistenze, con un condensatore che toglie la componente continua. Il segnale passa per la finestra di Blackman e la FFT, con N da 1024 a 16384. I dati vanno al PC in seriale a 115200 baud, con funzioni di media e MAXHOLD; un display LCD lo rende autonomo, e con un ADC esterno si arriva a 50 MS/s. Il software si scarica dalla pagina Elektor dell'articolo, `https://www.elektormagazine.com/magazine/elektor-312/62150`, non ancora letta, quindi licenza e linguaggio non sono verificati. Gli esempi dell'articolo sono segnali radio a onde lunghe, non audio.
+
+Se ha senso qui. Sì, come progetto di elettronica e di formazione, non come strumento di misura audio, e la distinzione decide come lo si costruisce.
+
+Come strumento di misura perde contro ciò che la macchina ha già. Un ADC a 12 bit ha un rapporto segnale rumore teorico di quantizzazione di circa 74 dB, calcolato con 6,02 per 12 più 1,76 e non misurato: è molto sotto la Scarlett 2i2 a 24 bit. Per la stanza e i diffusori, poi, REW con il microfono di misura del progetto dei monitor resta lo strumento giusto.
+
+Ha però tre usi che nessuna scheda audio copre. Vede fino a 250 kHz, cioè residui ultrasonici che una scheda audio taglia: la portante di commutazione di un amplificatore in classe D, come quelli valutati per i monitor attivi, oppure un'oscillazione parassita in un circuito analogico. È proprio lo strumento da banco che servirebbe alla pedaliera analogica di PA-030 del progetto dei monitor. Insegna poi in modo concreto finestre, risoluzione in frequenza, aliasing e filtro anti-aliasing, cioè i concetti che stanno dietro ogni analizzatore di una DAW, e in un progetto di training sono contenuto e non contorno. Infine, con il display diventa un analizzatore visivo autonomo da tenere in studio.
+
+Due avvertenze prima di collegarlo a una catena audio. La prima riguarda il livello. Con il punto medio a metà dei 3,3 V la dinamica è di circa ±1,65 V, mentre un'uscita professionale a +4 dBu ha picchi di circa 1,74 V; un'uscita per altoparlante è molto più alta. Serve quindi un partitore o uno stadio di adattamento, e il valore dei 3,3 V è una deduzione dallo schema, non letta nell'articolo. La seconda riguarda il collegamento seriale: a 115200 baud passano circa 11 500 byte al secondo, quindi il PC riceve qualche migliaio di campioni al secondo e il refresh resta lento. Va bene per guardare, non per un uso dal vivo. Anche questo è un calcolo, non una misura.
+
+Condizione di sblocco. La decisione dell'utente di aprirlo. Il primo passo è leggere la pagina Elektor del software, per licenza, linguaggio e formato dei dati.
+
+Criterio di completamento. Il sottoprogetto aperto con il proprio perimetro, cioè strumento da banco per la pedaliera, didattica o display da studio, oppure la decisione motivata di non farlo.
