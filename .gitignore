@@ -68,3 +68,7 @@ CLAUDE.local.md
 # istanziata; la copia modello sotto .claude/templates/ resta nascosta, ed e' il
 # difetto piu' ampio misurato il 2026-09-21 e lasciato alla decisione dell'utente.
 !/tex-packages.txt
+
+# Dati pubblici degli strumenti tipografici, copiati dal template.
+!/tools/accents-exclude.txt
+!/tools/dashes-exclude.txt
